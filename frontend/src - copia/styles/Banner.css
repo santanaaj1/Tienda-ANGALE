@@ -1,0 +1,162 @@
+.banner {
+
+  margin: 30px 40px;
+
+  border-radius: 20px;
+
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e3a8a,
+    #f97316
+  );
+
+  min-height: 350px;
+
+  display: flex;
+
+  align-items: center;
+
+  padding: 60px;
+
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
+
+}
+
+.banner-content {
+
+  max-width: 650px;
+
+}
+
+.banner h1 {
+
+  color: white;
+
+  font-size: 52px;
+
+  margin-bottom: 25px;
+
+  line-height: 1.2;
+
+}
+
+.banner p {
+
+  color: #e2e8f0;
+
+  font-size: 22px;
+
+  line-height: 1.8;
+
+  margin-bottom: 35px;
+
+}
+
+.banner button {
+
+  border: none;
+
+  background-color: #f97316;
+
+  color: white;
+
+  padding: 16px 35px;
+
+  border-radius: 10px;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  transition: .3s;
+
+}
+
+.banner button:hover {
+
+  background-color: #ea580c;
+
+  transform: translateY(-3px);
+
+}
+
+
+/* TABLET */
+
+@media (max-width:1024px) {
+
+  .banner {
+
+    margin: 25px;
+
+    padding: 45px;
+
+  }
+
+  .banner h1 {
+
+    font-size: 42px;
+
+  }
+
+  .banner p {
+
+    font-size: 19px;
+
+  }
+
+}
+
+
+/* CELULAR */
+
+@media (max-width:768px) {
+
+  .banner {
+
+    margin: 20px;
+
+    min-height: auto;
+
+    padding: 35px 25px;
+
+    text-align: center;
+
+    justify-content: center;
+
+  }
+
+  .banner-content {
+
+    max-width: 100%;
+
+  }
+
+  .banner h1 {
+
+    font-size: 34px;
+
+    margin-bottom: 20px;
+
+  }
+
+  .banner p {
+
+    font-size: 17px;
+
+    line-height: 1.6;
+
+  }
+
+  .banner button {
+
+    width: 100%;
+
+    padding: 15px;
+
+  }
+
+}

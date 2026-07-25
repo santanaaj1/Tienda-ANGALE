@@ -1,0 +1,61 @@
+.notification {
+
+  position: fixed;
+
+  top: 20px;
+
+  right: 20px;
+
+  padding: 15px 20px;
+
+  border-radius: 10px;
+
+  color: white;
+
+  font-weight: 600;
+
+  z-index: 9999;
+
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+  animation: fadeIn 0.3s ease;
+
+}
+
+.success {
+
+  background-color: #2ecc71;
+
+}
+
+.error {
+
+  background-color: #e74c3c;
+
+}
+
+.warning {
+
+  background-color: #f39c12;
+
+}
+
+@keyframes fadeIn {
+
+  from {
+
+    opacity: 0;
+
+    transform: translateY(-10px);
+
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+  }
+
+}

@@ -1,0 +1,365 @@
+header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 40px;
+
+  padding: 20px 45px;
+
+  background: #ffffff;
+
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+}
+
+/* ========================= */
+/* LOGO */
+/* ========================= */
+
+.logo {
+
+  border: none;
+
+  background: none;
+
+  font-size: 40px;
+
+  font-weight: 800;
+
+  color: #0f172a;
+
+  cursor: pointer;
+
+  letter-spacing: 2px;
+
+  transition: .25s;
+
+}
+
+.logo:hover {
+
+  color: #f97316;
+
+}
+
+/* ========================= */
+/* BUSCADOR */
+/* ========================= */
+
+.search-container {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 1;
+
+  gap: 14px;
+
+}
+
+.search-container input {
+
+  width: 100%;
+
+  max-width: 580px;
+
+  padding: 16px 24px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 30px;
+
+  outline: none;
+
+  font-size: 16px;
+
+  transition: .25s;
+
+}
+
+.search-container input:focus {
+
+  border-color: #f97316;
+
+  box-shadow: 0 0 10px rgba(249,115,22,.20);
+
+}
+
+.search-button {
+
+  width: 120px;
+
+  height: 52px;
+
+  border: none;
+
+  border-radius: 30px;
+
+  background: #f97316;
+
+  color: white;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: .25s;
+
+}
+
+.search-button:hover {
+
+  background: #ea580c;
+
+  transform: translateY(-2px);
+
+}
+
+/* ========================= */
+/* MENÚ */
+/* ========================= */
+
+header nav {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 32px;
+
+}
+
+header nav a {
+
+  display: flex;
+
+  align-items: center;
+
+  text-decoration: none;
+
+  color: #0f172a;
+
+  font-size: 19px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  transition: .25s;
+
+}
+
+header nav a:hover {
+
+  color: #f97316;
+
+  transform: translateY(-2px);
+
+}
+
+.nav-active {
+
+  color: #f97316 !important;
+
+  font-weight: 700;
+
+}
+
+/* ========================= */
+/* CARRITO */
+/* ========================= */
+
+.cart-container {
+
+  position: relative;
+
+}
+
+.cart-button {
+
+  border: none;
+
+  background: none;
+
+  color: #0f172a;
+
+  font-size: 19px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: .25s;
+
+}
+
+.cart-button:hover {
+
+  color: #f97316;
+
+  transform: translateY(-2px);
+
+}
+
+.cart-active {
+
+  color: #f97316;
+
+  font-weight: 700;
+
+}
+
+/* ========================= */
+/* BOTÓN SALIR */
+/* ========================= */
+
+.logout-button {
+
+  border: none;
+
+  background: #f97316;
+
+  color: white;
+
+  padding: 12px 24px;
+
+  border-radius: 28px;
+
+  font-size: 17px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: .25s;
+
+}
+
+.logout-button:hover {
+
+  background: #ea580c;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 6px 15px rgba(249,115,22,.35);
+
+}
+
+/* ========================= */
+/* TABLET */
+/* ========================= */
+
+@media (max-width:1024px) {
+
+  header {
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 24px;
+
+  }
+
+  .search-container {
+
+    width: 100%;
+
+    order: 3;
+
+  }
+
+  header nav {
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 24px;
+
+  }
+
+}
+
+/* ========================= */
+/* CELULAR */
+/* ========================= */
+
+@media (max-width:768px) {
+
+  header {
+
+    flex-direction: column;
+
+    gap: 20px;
+
+    padding: 20px;
+
+  }
+
+  .logo {
+
+    font-size: 34px;
+
+  }
+
+  .search-container {
+
+    width: 100%;
+
+  }
+
+  .search-container input {
+
+    max-width: 100%;
+
+  }
+
+  .search-button {
+
+    width: 110px;
+
+    height: 48px;
+
+    font-size: 16px;
+
+  }
+
+  header nav {
+
+    width: 100%;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 18px;
+
+  }
+
+  header nav a,
+
+  .cart-button,
+
+  .logout-button {
+
+    font-size: 17px;
+
+  }
+
+}
