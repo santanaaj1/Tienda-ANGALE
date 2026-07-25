@@ -4,7 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 
 import App from "./App";
 
-import DataProvider from "./context/DataContext";
+import CategoryProvider from "./context/CategoryContext";
+import BrandProvider from "./context/BrandContext";
 import AuthProvider from "./context/AuthContext";
 import ProductProvider from "./context/ProductContext";
 import FavoritesProvider from "./context/FavoritesContext";
@@ -16,43 +17,48 @@ import Notification from "./components/Notification";
 
 import "./styles/global.css";
 
+
 ReactDOM.createRoot(
   document.getElementById("root")
 ).render(
 
   <NotificationProvider>
 
-    <DataProvider>
+    <AuthProvider>
 
-      <AuthProvider>
+      <ProductProvider>
 
-        <ProductProvider>
+        <CategoryProvider>
 
-          <FavoritesProvider>
+          <BrandProvider>
 
-            <CartProvider>
+            <FavoritesProvider>
 
-              <SearchProvider>
+              <CartProvider>
 
-                <BrowserRouter>
+                <SearchProvider>
 
-                  <Notification />
+                  <BrowserRouter>
 
-                  <App />
+                    <Notification />
 
-                </BrowserRouter>
+                    <App />
 
-              </SearchProvider>
+                  </BrowserRouter>
 
-            </CartProvider>
+                </SearchProvider>
 
-          </FavoritesProvider>
+              </CartProvider>
 
-        </ProductProvider>
+            </FavoritesProvider>
 
-      </AuthProvider>
+          </BrandProvider>  
 
-    </DataProvider>
+      </CategoryProvider>
+
+      </ProductProvider>
+
+    </AuthProvider>
 
   </NotificationProvider>
 

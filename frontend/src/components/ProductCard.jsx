@@ -1,7 +1,6 @@
 import "../styles/ProductCard.css";
 
 import { Link, useNavigate } from "react-router-dom";
-
 import { useContext } from "react";
 
 import { FavoritesContext } from "../context/FavoritesContext";
@@ -9,45 +8,89 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
 
+import formatCurrency from "../utils/formatCurrency";
+
 function ProductCard({
   id,
   nombre,
   descripcion,
   precio,
   icono,
+  image,
   stock
 }) {
 
   const navigate = useNavigate();
 
   const {
+
     favorites,
+
     toggleFavorite
-  } = useContext(FavoritesContext);
+
+  } = useContext(
+
+    FavoritesContext
+
+  );
 
   const {
+
     addToCart,
+
     getQuantityInCart
-  } = useContext(CartContext);
+
+  } = useContext(
+
+    CartContext
+
+  );
 
   const {
+
     currentUser
-  } = useContext(AuthContext);
+
+  } = useContext(
+
+    AuthContext
+
+  );
 
   const {
-    showNotification
-  } = useContext(NotificationContext);
 
-  const isFavorite =
-    favorites.some(
-      (product) => product.id === id
-    );
+    showNotification
+
+  } = useContext(
+
+    NotificationContext
+
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Verificar si el producto es favorito
+  |--------------------------------------------------------------------------
+  */
+
+  const isFavorite = favorites.some(
+
+    favorite => favorite.producto_id === id
+
+  );
 
   const quantityInCart =
+
     getQuantityInCart(id);
 
   const availableStock =
+
     stock - quantityInCart;
+
+  /*
+  |--------------------------------------------------------------------------
+  | Agregar al carrito
+  |--------------------------------------------------------------------------
+  */
 
   const handleAddToCart = () => {
 
@@ -70,13 +113,24 @@ function ProductCard({
     addToCart({
 
       id,
+
       nombre,
+
       precio,
-      icono
+
+      icono,
+
+      image
 
     });
 
   };
+
+  /*
+  |--------------------------------------------------------------------------
+  | Favoritos
+  |--------------------------------------------------------------------------
+  */
 
   const handleFavorite = () => {
 
@@ -85,10 +139,17 @@ function ProductCard({
       {
 
         id,
+
         nombre,
+
         descripcion,
+
         precio,
+
         icono,
+
+        image,
+
         stock
 
       },
@@ -106,9 +167,13 @@ function ProductCard({
     <div className="product-card">
 
       <button
+
         type="button"
+
         className="favorite-button"
+
         onClick={handleFavorite}
+
       >
 
         {
@@ -124,13 +189,36 @@ function ProductCard({
       </button>
 
       <Link
+
         to={`/product/${id}`}
+
         className="product-link"
+
       >
 
         <div className="product-image">
 
-          {icono}
+          {
+
+            image ? (
+
+              <img
+
+                src={`http://localhost:3000/images/products/${image}`}
+
+                alt={nombre}
+
+                className="product-image-file"
+
+              />
+
+            ) : (
+
+              icono
+
+            )
+
+          }
 
         </div>
 
@@ -150,15 +238,20 @@ function ProductCard({
 
       <p className="product-price">
 
-        {precio}
+        {formatCurrency(precio)}
 
       </p>
 
       <p
+
         style={{
+
           marginBottom: "10px",
+
           fontSize: "14px"
+
         }}
+
       >
 
         Stock: {availableStock}
@@ -166,9 +259,13 @@ function ProductCard({
       </p>
 
       <button
+
         className="product-button"
+
         disabled={availableStock === 0}
+
         onClick={handleAddToCart}
+
       >
 
         {

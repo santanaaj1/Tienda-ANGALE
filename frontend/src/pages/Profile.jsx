@@ -2,7 +2,8 @@ import "../styles/Profile.css";
 
 import {
   useContext,
-  useState
+  useState,
+  useEffect
 } from "react";
 
 import {
@@ -10,8 +11,8 @@ import {
 } from "../context/AuthContext";
 
 import {
-  DataContext
-} from "../context/DataContext";
+  getOrders
+} from "../services/ordersService";
 
 function Profile() {
 
@@ -27,15 +28,13 @@ function Profile() {
 
   );
 
-  const {
+  const [
 
-    orders
+    orders,
 
-  } = useContext(
+    setOrders
 
-    DataContext
-
-  );
+  ] = useState([]);
 
   const [
 
@@ -77,15 +76,53 @@ function Profile() {
 
   ] = useState("");
 
-  const userOrders = orders.filter(
+  /*
+  |--------------------------------------------------------------------------
+  | Cargar pedidos del usuario
+  |--------------------------------------------------------------------------
+  */
 
-    order =>
+  useEffect(() => {
 
-      order.cliente === currentUser?.email
+    const loadOrders = async () => {
 
-  );
+      if (!currentUser) return;
 
-  const handleSubmit = (
+      try {
+
+        const data = await getOrders(
+
+          currentUser.id
+
+        );
+
+        setOrders(data);
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+    loadOrders();
+
+  }, [
+
+    currentUser
+
+  ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cambiar contraseña
+  |--------------------------------------------------------------------------
+  */
+
+  const handleSubmit = async (
 
     event
 
@@ -115,15 +152,13 @@ function Profile() {
 
     }
 
-    const result =
+    const result = await changePassword(
 
-      changePassword(
+      currentPassword,
 
-        currentPassword,
+      newPassword
 
-        newPassword
-
-      );
+    );
 
     setMessage(
 
@@ -159,7 +194,7 @@ function Profile() {
 
   return (
 
-    <div className="profile-container">
+        <div className="profile-container">
 
       <h1 className="profile-title">
 
@@ -191,7 +226,7 @@ function Profile() {
 
               {" "}
 
-              {currentUser?.nombre}
+              {currentUser?.nombre} {currentUser?.apellido}
 
             </p>
 
@@ -339,65 +374,79 @@ function Profile() {
 
           {
 
-            userOrders.length > 0 ?
+            orders.length > 0
 
-            (
+              ? (
 
-              userOrders.map(
+                orders.map(
 
-                order => (
+                  order => (
 
-                  <div
+                    <div
 
-                    key={order.id}
+                      key={order.id}
 
-                    className="order-item"
+                      className="order-item"
 
-                  >
+                    >
 
-                    <span>
+                      <span>
 
-                      Pedido #{order.id}
+                        Pedido #{order.id}
 
-                    </span>
+                      </span>
 
-                    <span>
+                      <span>
 
-                      {order.fecha}
+                        {
 
-                    </span>
+                          new Date(order.fecha)
 
-                    <span>
+                            .toLocaleDateString(
 
-                      $
+                              "es-CL"
 
-                      {order.total.toLocaleString(
+                            )
 
-                        "es-CL"
+                        }
 
-                      )}
+                      </span>
 
-                    </span>
+                      <span>
 
-                  </div>
+                        $
+
+                        {
+
+                          Number(order.total)
+
+                            .toLocaleString(
+
+                              "es-CL"
+
+                            )
+
+                        }
+
+                      </span>
+
+                    </div>
+
+                  )
 
                 )
 
               )
 
-            )
+              : (
 
-            :
+                <p>
 
-            (
+                  Aún no has realizado compras.
 
-              <p>
+                </p>
 
-                Aún no has realizado compras.
-
-              </p>
-
-            )
+              )
 
           }
 

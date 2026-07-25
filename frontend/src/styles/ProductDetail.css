@@ -30,9 +30,15 @@
 
 }
 
+/* =======================================================
+   IMAGEN DEL PRODUCTO
+======================================================= */
+
 .product-image-large {
 
-  height: 250px;
+  width: 100%;
+
+  height: 300px;
 
   display: flex;
 
@@ -40,7 +46,7 @@
 
   align-items: center;
 
-  font-size: 115px;
+  overflow: hidden;
 
   background-color: #f8fafc;
 
@@ -49,6 +55,22 @@
   margin-bottom: 30px;
 
 }
+
+.product-image-large-file {
+
+  width: 90%;
+
+  height: 90%;
+
+  object-fit: contain;
+
+  display: block;
+
+}
+
+/* =======================================================
+   INFORMACIÓN
+======================================================= */
 
 .product-name {
 
@@ -81,6 +103,10 @@
   font-size: 16px;
 
 }
+
+/* =======================================================
+   PANEL DE COMPRA
+======================================================= */
 
 .purchase-panel {
 
@@ -117,6 +143,16 @@
   color: #2563eb;
 
   margin-bottom: 25px;
+
+}
+
+.stock-available {
+
+  color: #16a34a;
+
+  font-weight: 600;
+
+  margin-bottom: 20px;
 
 }
 
@@ -226,6 +262,18 @@
 
 }
 
+.add-cart-button:disabled {
+
+  background-color: #94a3b8;
+
+  cursor: not-allowed;
+
+}
+
+/* =======================================================
+   BOTÓN VOLVER
+======================================================= */
+
 .back-button-detail {
 
   margin-top: 30px;
@@ -258,8 +306,9 @@
 
 }
 
-
-/* TABLET */
+/* =======================================================
+   TABLET
+======================================================= */
 
 @media (max-width:1024px) {
 
@@ -277,8 +326,9 @@
 
 }
 
-
-/* CELULAR */
+/* =======================================================
+   CELULAR
+======================================================= */
 
 @media (max-width:768px) {
 
@@ -296,9 +346,15 @@
 
   .product-image-large {
 
-    height: 180px;
+    height: 220px;
 
-    font-size: 80px;
+  }
+
+  .product-image-large-file {
+
+    width: 85%;
+
+    height: 85%;
 
   }
 

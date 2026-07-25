@@ -4,7 +4,9 @@ import {
 
   createUser,
 
-  loginUser
+  loginUser,
+
+  updatePassword
 
 } from "../queries/users.js";
 
@@ -48,13 +50,109 @@ const registerUser = async (request, response) => {
 
   try {
 
+    const {
+
+      nombre,
+
+      apellido,
+
+      email,
+
+      password
+
+    } = request.body;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validaciones
+    |--------------------------------------------------------------------------
+    */
+
+    if (!nombre?.trim()) {
+
+      return response.status(400).json({
+
+        message: "El nombre es obligatorio."
+
+      });
+
+    }
+
+    if (!apellido?.trim()) {
+
+      return response.status(400).json({
+
+        message: "El apellido es obligatorio."
+
+      });
+
+    }
+
+    if (!email?.trim()) {
+
+      return response.status(400).json({
+
+        message: "El correo electrónico es obligatorio."
+
+      });
+
+    }
+
+    const emailRegex =
+
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (
+
+      !emailRegex.test(email)
+
+    ) {
+
+      return response.status(400).json({
+
+        message: "El correo electrónico no tiene un formato válido."
+
+      });
+
+    }
+
+    if (!password) {
+
+      return response.status(400).json({
+
+        message: "La contraseña es obligatoria."
+
+      });
+
+    }
+
+    if (password.length < 6) {
+
+      return response.status(400).json({
+
+        message: "La contraseña debe tener al menos 6 caracteres."
+
+      });
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Registrar usuario
+    |--------------------------------------------------------------------------
+    */
+
     const newUser = await createUser(
 
       request.body
 
     );
 
-    response.status(201).json(newUser);
+    return response.status(201).json(
+
+      newUser
+
+    );
 
   }
 
@@ -62,7 +160,29 @@ const registerUser = async (request, response) => {
 
     console.error(error);
 
-    response.status(500).json({
+    /*
+    |--------------------------------------------------------------------------
+    | Correo duplicado
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+
+      error.message ===
+
+      "El correo electrónico ya se encuentra registrado."
+
+    ) {
+
+      return response.status(409).json({
+
+        message: error.message
+
+      });
+
+    }
+
+    return response.status(500).json({
 
       message: "Error al registrar el usuario"
 
@@ -116,12 +236,60 @@ const login = async (request, response) => {
 
 };
 
+/*
+|--------------------------------------------------------------------------
+| Cambiar contraseña
+|--------------------------------------------------------------------------
+*/
+
+const changePassword = async (request, response) => {
+
+  try {
+
+    const {
+
+      currentPassword,
+
+      newPassword
+
+    } = request.body;
+
+    const result = await updatePassword(
+
+      request.user.id,
+
+      currentPassword,
+
+      newPassword
+
+    );
+
+    response.status(200).json(result);
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    response.status(400).json({
+
+      message: error.message
+
+    });
+
+  }
+
+};
+
 export {
 
   readUsers,
 
   registerUser,
 
-  login
+  login,
+
+  changePassword
 
 };

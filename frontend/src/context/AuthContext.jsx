@@ -4,6 +4,11 @@ import {
   useEffect
 } from "react";
 
+import {
+  loginUser,
+  changePassword as changePasswordService
+} from "../services/authService";
+
 export const AuthContext =
   createContext();
 
@@ -20,7 +25,9 @@ function AuthProvider({ children }) {
     const savedUser = JSON.parse(
 
       localStorage.getItem(
+
         "currentUser"
+
       )
 
     );
@@ -35,125 +42,83 @@ function AuthProvider({ children }) {
 
   }, []);
 
-  // Registrar usuario
-  const register = (
-    nombre,
+  /*
+  |--------------------------------------------------------------------------
+  | Login
+  |--------------------------------------------------------------------------
+  */
+
+  const login = async (
+
     email,
+
     password
+
   ) => {
 
-    const users = JSON.parse(
+    try {
 
-      localStorage.getItem(
-        "users"
+      const data = await loginUser(
 
-      )
+        email,
 
-    ) || [];
+        password
 
-    const userExists = users.find(
+      );
 
-      user => user.email === email
+      localStorage.setItem(
 
-    );
+        "token",
 
-    if (userExists) {
+        data.token
+
+      );
+
+      const user = {
+
+        id: data.usuario.id,
+
+        nombre: data.usuario.nombre,
+
+        apellido: data.usuario.apellido,
+
+        email: data.usuario.email,
+
+        role: data.usuario.rol
+
+      };
+
+      setCurrentUser(user);
+
+      localStorage.setItem(
+
+        "currentUser",
+
+        JSON.stringify(user)
+
+      );
+
+      return true;
+
+    }
+
+    catch (error) {
+
+      console.error(error);
 
       return false;
 
     }
 
-    const newUser = {
-
-      nombre,
-
-      email,
-
-      password,
-
-      role: "user"
-
-    };
-
-    users.push(newUser);
-
-    localStorage.setItem(
-
-      "users",
-
-      JSON.stringify(users)
-
-    );
-
-    return true;
-
   };
 
-  // Login
-  const login = (
-    email,
-    password
-  ) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Cambiar contraseña
+  |--------------------------------------------------------------------------
+  */
 
-    const users = JSON.parse(
-
-      localStorage.getItem(
-        "users"
-      )
-
-    ) || [];
-
-    const adminUser = {
-
-      nombre: "Administrador",
-
-      email: "admin@angale.com",
-
-      password: "123456",
-
-      role: "admin"
-
-    };
-
-    const allUsers = [
-
-      ...users,
-
-      adminUser
-
-    ];
-
-    const foundUser = allUsers.find(
-
-      user =>
-
-        user.email === email &&
-        user.password === password
-
-    );
-
-    if (!foundUser) {
-
-      return false;
-
-    }
-
-    setCurrentUser(foundUser);
-
-    localStorage.setItem(
-
-      "currentUser",
-
-      JSON.stringify(foundUser)
-
-    );
-
-    return true;
-
-  };
-
-  // Cambiar contraseña
-  const changePassword = (
+  const changePassword = async (
 
     currentPassword,
 
@@ -161,45 +126,13 @@ function AuthProvider({ children }) {
 
   ) => {
 
-    if (
+    try {
 
-      currentUser.password !== currentPassword
+      const result = await changePasswordService(
 
-    ) {
+        currentPassword,
 
-      return {
-
-        success: false,
-
-        message:
-
-          "La contraseña actual es incorrecta"
-
-      };
-
-    }
-
-    if (
-
-      currentUser.role === "admin"
-
-    ) {
-
-      const updatedAdmin = {
-
-        ...currentUser,
-
-        password: newPassword
-
-      };
-
-      setCurrentUser(updatedAdmin);
-
-      localStorage.setItem(
-
-        "currentUser",
-
-        JSON.stringify(updatedAdmin)
+        newPassword
 
       );
 
@@ -207,83 +140,32 @@ function AuthProvider({ children }) {
 
         success: true,
 
-        message:
-
-          "Contraseña actualizada correctamente"
+        message: result.message
 
       };
 
     }
 
-    const users = JSON.parse(
+    catch (error) {
 
-      localStorage.getItem(
-        "users"
-      )
+      return {
 
-    ) || [];
+        success: false,
 
-    const updatedUsers = users.map(
+        message: error.message
 
-      user =>
+      };
 
-        user.email === currentUser.email
-
-          ? {
-
-              ...user,
-
-              password: newPassword
-
-            }
-
-          : user
-
-    );
-
-    localStorage.setItem(
-
-      "users",
-
-      JSON.stringify(updatedUsers)
-
-    );
-
-    const updatedCurrentUser = {
-
-      ...currentUser,
-
-      password: newPassword
-
-    };
-
-    setCurrentUser(
-
-      updatedCurrentUser
-
-    );
-
-    localStorage.setItem(
-
-      "currentUser",
-
-      JSON.stringify(updatedCurrentUser)
-
-    );
-
-    return {
-
-      success: true,
-
-      message:
-
-        "Contraseña actualizada correctamente"
-
-    };
+    }
 
   };
 
-  // Logout
+  /*
+  |--------------------------------------------------------------------------
+  | Logout
+  |--------------------------------------------------------------------------
+  */
+
   const logout = () => {
 
     setCurrentUser(null);
@@ -291,6 +173,12 @@ function AuthProvider({ children }) {
     localStorage.removeItem(
 
       "currentUser"
+
+    );
+
+    localStorage.removeItem(
+
+      "token"
 
     );
 
@@ -305,8 +193,6 @@ function AuthProvider({ children }) {
         currentUser,
 
         loading,
-
-        register,
 
         login,
 

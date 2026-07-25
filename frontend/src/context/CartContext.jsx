@@ -22,7 +22,12 @@ function CartProvider({ children }) {
   const { currentUser } =
     useContext(AuthContext);
 
-  // Cargar carrito del usuario actual
+  /*
+  |--------------------------------------------------------------------------
+  | Cargar carrito del usuario actual
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
 
     if (!currentUser) {
@@ -43,11 +48,25 @@ function CartProvider({ children }) {
 
     ) || [];
 
-    setCartItems(savedCart);
+    // Normalizar precios para que siempre sean numéricos
+    const normalizedCart = savedCart.map(item => ({
+
+      ...item,
+
+      precio: Number(item.precio)
+
+    }));
+
+    setCartItems(normalizedCart);
 
   }, [currentUser]);
 
-  // Guardar carrito automáticamente
+  /*
+  |--------------------------------------------------------------------------
+  | Guardar carrito automáticamente
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
 
     if (!currentUser) {
@@ -66,15 +85,31 @@ function CartProvider({ children }) {
 
   }, [cartItems, currentUser]);
 
-  // Agregar producto
+  /*
+  |--------------------------------------------------------------------------
+  | Agregar producto
+  |--------------------------------------------------------------------------
+  */
+
   const addToCart = (
+
     product,
+
     quantity = 1
+
   ) => {
+
+    const normalizedProduct = {
+
+      ...product,
+
+      precio: Number(product.precio)
+
+    };
 
     const existingProduct =
       cartItems.find(
-        item => item.id === product.id
+        item => item.id === normalizedProduct.id
       );
 
     if (existingProduct) {
@@ -83,13 +118,14 @@ function CartProvider({ children }) {
 
         cartItems.map(item =>
 
-          item.id === product.id
+          item.id === normalizedProduct.id
 
             ? {
 
                 ...item,
 
                 quantity:
+
                   item.quantity + quantity
 
               }
@@ -108,7 +144,7 @@ function CartProvider({ children }) {
 
         {
 
-          ...product,
+          ...normalizedProduct,
 
           quantity
 
@@ -128,7 +164,12 @@ function CartProvider({ children }) {
 
   };
 
-  // Aumentar cantidad
+  /*
+  |--------------------------------------------------------------------------
+  | Aumentar cantidad
+  |--------------------------------------------------------------------------
+  */
+
   const increaseQuantity = id => {
 
     setCartItems(
@@ -142,6 +183,7 @@ function CartProvider({ children }) {
               ...item,
 
               quantity:
+
                 item.quantity + 1
 
             }
@@ -154,7 +196,12 @@ function CartProvider({ children }) {
 
   };
 
-  // Disminuir cantidad
+  /*
+  |--------------------------------------------------------------------------
+  | Disminuir cantidad
+  |--------------------------------------------------------------------------
+  */
+
   const decreaseQuantity = id => {
 
     setCartItems(
@@ -178,6 +225,7 @@ function CartProvider({ children }) {
           ...item,
 
           quantity:
+
             item.quantity - 1
 
         };
@@ -188,7 +236,12 @@ function CartProvider({ children }) {
 
   };
 
-  // Eliminar producto
+  /*
+  |--------------------------------------------------------------------------
+  | Eliminar producto
+  |--------------------------------------------------------------------------
+  */
+
   const removeFromCart = id => {
 
     setCartItems(
@@ -211,7 +264,12 @@ function CartProvider({ children }) {
 
   };
 
-  // Vaciar carrito
+  /*
+  |--------------------------------------------------------------------------
+  | Vaciar carrito
+  |--------------------------------------------------------------------------
+  */
+
   const clearCart = () => {
 
     setCartItems([]);
@@ -228,7 +286,12 @@ function CartProvider({ children }) {
 
   };
 
-  // Obtener cantidad de un producto
+  /*
+  |--------------------------------------------------------------------------
+  | Obtener cantidad de un producto
+  |--------------------------------------------------------------------------
+  */
+
   const getQuantityInCart = id => {
 
     const product =

@@ -17,16 +17,18 @@ import {
 } from "../context/AuthContext";
 
 import {
-  DataContext
-} from "../context/DataContext";
-
-import {
   ProductContext
 } from "../context/ProductContext";
 
 import {
   NotificationContext
 } from "../context/NotificationContext";
+
+import {
+  createOrder
+} from "../services/ordersService";
+
+import formatCurrency from "../utils/formatCurrency";
 
 import "../styles/Checkout.css";
 
@@ -61,21 +63,7 @@ function Checkout() {
 
   const {
 
-    orders,
-
-    addOrder
-
-  } = useContext(
-
-    DataContext
-
-  );
-
-  const {
-
-    products,
-
-    updateStock
+    products
 
   } = useContext(
 
@@ -117,6 +105,12 @@ function Checkout() {
 
   ]);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Cantidad de artículos
+  |--------------------------------------------------------------------------
+  */
+
   const totalItems = cartItems.reduce(
 
     (total, item) =>
@@ -127,132 +121,101 @@ function Checkout() {
 
   );
 
+  /*
+  |--------------------------------------------------------------------------
+  | Total del pedido
+  |--------------------------------------------------------------------------
+  */
+
   const totalAmount = cartItems.reduce(
 
-    (total, item) => {
+    (total, item) =>
 
-      const price = Number(
+      total +
 
-        item.precio
-          .replace("$", "")
-          .replaceAll(".", "")
-
-      );
-
-      return total +
-
-        price * item.quantity;
-
-    },
+      (Number(item.precio) * item.quantity),
 
     0
 
   );
 
-  const handlePlaceOrder = () => {
+  /*
+  |--------------------------------------------------------------------------
+  | Finalizar compra
+  |--------------------------------------------------------------------------
+  */
 
-    // Validar stock antes de crear el pedido
-    for (const item of cartItems) {
+  const handlePlaceOrder = async () => {
 
-      const product = products.find(
+    try {
 
-        product =>
+      // Validar stock mostrado en pantalla
 
-          product.id === item.id
+      for (const item of cartItems) {
 
-      );
+        const product = products.find(
 
-      if (!product || product.stock < item.quantity) {
+          product =>
 
-        showNotification(
-
-          `Stock insuficiente para ${item.nombre}`,
-
-          "warning"
+            product.id === item.id
 
         );
 
-        return;
+        if (
+
+          !product ||
+
+          product.stock < item.quantity
+
+        ) {
+
+          showNotification(
+
+            `Stock insuficiente para ${item.nombre}`,
+
+            "warning"
+
+          );
+
+          return;
+
+        }
 
       }
 
-    }
+      setOrderCompleted(true);
 
-    setOrderCompleted(true);
+      const createdOrder = await createOrder(
 
-    const orderNumber = String(
+        cartItems,
 
-      orders.length + 1
-
-    ).padStart(
-
-      3,
-
-      "0"
-
-    );
-
-    const today = new Date()
-
-      .toLocaleDateString(
-
-        "es-CL"
+        totalAmount
 
       );
 
-    const newOrder = {
+      clearCart();
 
-      id: orderNumber,
+      navigate(
 
-      cliente: currentUser.email,
+        `/order-confirmation/${createdOrder.id}`
 
-      fecha: today,
+      );
 
-      items: cartItems,
+    }
 
-      total: totalAmount
+    catch (error) {
 
-    };
+      console.error(error);
 
-    addOrder(
+      showNotification(
 
-      newOrder
+        "No fue posible registrar el pedido.",
 
-    );
+        "error"
 
-    cartItems.forEach(
+      );
 
-      item =>
-
-        updateStock(
-
-          item.id,
-
-          item.quantity
-
-        )
-
-    );
-
-    localStorage.setItem(
-
-      "lastOrder",
-
-      JSON.stringify(
-
-        newOrder
-
-      )
-
-    );
-
-    clearCart();
-
-    navigate(
-
-      "/order-confirmation"
-
-    );
+    }
 
   };
 
@@ -276,10 +239,25 @@ function Checkout() {
 
           </h2>
 
-          <input type="text" placeholder="Nombre" />
-          <input type="text" placeholder="Apellido" />
-          <input type="email" placeholder="Correo electrónico" />
-          <input type="text" placeholder="Teléfono" />
+          <input
+            type="text"
+            placeholder="Nombre"
+          />
+
+          <input
+            type="text"
+            placeholder="Apellido"
+          />
+
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+          />
+
+          <input
+            type="text"
+            placeholder="Teléfono"
+          />
 
           <h2>
 
@@ -287,10 +265,25 @@ function Checkout() {
 
           </h2>
 
-          <input type="text" placeholder="Región" />
-          <input type="text" placeholder="Ciudad" />
-          <input type="text" placeholder="Dirección" />
-          <input type="text" placeholder="Código postal" />
+          <input
+            type="text"
+            placeholder="Región"
+          />
+
+          <input
+            type="text"
+            placeholder="Ciudad"
+          />
+
+          <input
+            type="text"
+            placeholder="Dirección"
+          />
+
+          <input
+            type="text"
+            placeholder="Código postal"
+          />
 
         </div>
 
@@ -344,13 +337,7 @@ function Checkout() {
 
           <h3>
 
-            Total: $
-
-            {totalAmount.toLocaleString(
-
-              "es-CL"
-
-            )}
+            Total: {formatCurrency(totalAmount)}
 
           </h3>
 

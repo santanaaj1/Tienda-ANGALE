@@ -50,7 +50,13 @@ const createUser = async (user) => {
 
   } = user;
 
-  const encryptedPassword = await bcrypt.hash(password, 10);
+  const encryptedPassword = await bcrypt.hash(
+
+    password,
+
+    10
+
+  );
 
   const query = `
 
@@ -87,16 +93,56 @@ const createUser = async (user) => {
   const values = [
 
     nombre,
+
     apellido,
+
     email,
+
     encryptedPassword,
+
     rol || "cliente"
 
   ];
 
-  const result = await pool.query(query, values);
+  try {
 
-  return result.rows[0];
+    const result = await pool.query(
+
+      query,
+
+      values
+
+    );
+
+    return result.rows[0];
+
+  }
+
+  catch (error) {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Correo duplicado
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+
+      error.code === "23505"
+
+    ) {
+
+      throw new Error(
+
+        "El correo electrónico ya se encuentra registrado."
+
+      );
+
+    }
+
+    throw error;
+
+  }
 
 };
 
@@ -106,7 +152,13 @@ const createUser = async (user) => {
 |--------------------------------------------------------------------------
 */
 
-const loginUser = async (email, password) => {
+const loginUser = async (
+
+  email,
+
+  password
+
+) => {
 
   const query = `
 
@@ -122,11 +174,19 @@ const loginUser = async (email, password) => {
 
     query,
 
-    [email]
+    [
+
+      email
+
+    ]
 
   );
 
-  if (result.rowCount === 0) {
+  if (
+
+    result.rowCount === 0
+
+  ) {
 
     throw new Error(
 
@@ -146,7 +206,11 @@ const loginUser = async (email, password) => {
 
   );
 
-  if (!validPassword) {
+  if (
+
+    !validPassword
+
+  ) {
 
     throw new Error(
 
@@ -200,12 +264,130 @@ const loginUser = async (email, password) => {
 
 };
 
+/*
+|--------------------------------------------------------------------------
+| Cambiar contraseña
+|--------------------------------------------------------------------------
+*/
+
+const updatePassword = async (
+
+  userId,
+
+  currentPassword,
+
+  newPassword
+
+) => {
+
+  const query = `
+
+    SELECT *
+
+    FROM usuarios
+
+    WHERE id = $1;
+
+  `;
+
+  const result = await pool.query(
+
+    query,
+
+    [
+
+      userId
+
+    ]
+
+  );
+
+  if (
+
+    result.rowCount === 0
+
+  ) {
+
+    throw new Error(
+
+      "Usuario no encontrado"
+
+    );
+
+  }
+
+  const user = result.rows[0];
+
+  const validPassword = await bcrypt.compare(
+
+    currentPassword,
+
+    user.password
+
+  );
+
+  if (
+
+    !validPassword
+
+  ) {
+
+    throw new Error(
+
+      "La contraseña actual es incorrecta"
+
+    );
+
+  }
+
+  const encryptedPassword = await bcrypt.hash(
+
+    newPassword,
+
+    10
+
+  );
+
+  await pool.query(
+
+    `
+
+      UPDATE usuarios
+
+      SET password = $1
+
+      WHERE id = $2;
+
+    `,
+
+    [
+
+      encryptedPassword,
+
+      userId
+
+    ]
+
+  );
+
+  return {
+
+    message:
+
+      "Contraseña actualizada correctamente"
+
+  };
+
+};
+
 export {
 
   getUsers,
 
   createUser,
 
-  loginUser
+  loginUser,
+
+  updatePassword
 
 };

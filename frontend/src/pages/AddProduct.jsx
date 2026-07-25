@@ -14,6 +14,14 @@ import {
 } from "../context/ProductContext";
 
 import {
+  CategoryContext
+} from "../context/CategoryContext";
+
+import {
+  BrandContext
+} from "../context/BrandContext";
+
+import {
   NotificationContext
 } from "../context/NotificationContext";
 
@@ -24,25 +32,27 @@ function AddProduct() {
   const navigate = useNavigate();
 
   const {
-
-    products,
-
     addProduct
-
   } = useContext(
-
     ProductContext
-
   );
 
   const {
-
-    showNotification
-
+    categories
   } = useContext(
+    CategoryContext
+  );
 
+  const {
+    brands
+  } = useContext(
+    BrandContext
+  );
+
+  const {
+    showNotification
+  } = useContext(
     NotificationContext
-
   );
 
   const [nombre, setNombre] =
@@ -63,51 +73,51 @@ function AddProduct() {
   const [stock, setStock] =
     useState("");
 
-  const handleSubmit = (event) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Guardar producto
+  |--------------------------------------------------------------------------
+  */
+
+  const handleSubmit = async (event) => {
 
     event.preventDefault();
 
     const newProduct = {
 
-      id:
-
-        products.length > 0
-
-          ? Math.max(
-
-              ...products.map(
-
-                product => product.id
-
-              )
-
-            ) + 1
-
-          : 1,
-
       nombre,
 
       descripcion,
 
-      precio,
+      precio: Number(precio),
 
       marca,
 
       categoria,
 
-      stock:
-
-        Number(stock),
+      stock: Number(stock),
 
       icono: "📦"
 
     };
 
-    addProduct(
-
+    const success = await addProduct(
       newProduct
-
     );
+
+    if (!success) {
+
+      showNotification(
+
+        "No fue posible agregar el producto.",
+
+        "error"
+
+      );
+
+      return;
+
+    }
 
     showNotification(
 
@@ -118,9 +128,7 @@ function AddProduct() {
     );
 
     navigate(
-
       "/admin/products"
-
     );
 
   };
@@ -160,9 +168,7 @@ function AddProduct() {
               onChange={(event) =>
 
                 setNombre(
-
                   event.target.value
-
                 )
 
               }
@@ -180,9 +186,7 @@ function AddProduct() {
               onChange={(event) =>
 
                 setDescripcion(
-
                   event.target.value
-
                 )
 
               }
@@ -193,18 +197,18 @@ function AddProduct() {
 
             <input
 
-              type="text"
+              type="number"
 
               placeholder="Precio"
+
+              min="0"
 
               value={precio}
 
               onChange={(event) =>
 
                 setPrecio(
-
                   event.target.value
-
                 )
 
               }
@@ -220,9 +224,7 @@ function AddProduct() {
               onChange={(event) =>
 
                 setMarca(
-
                   event.target.value
-
                 )
 
               }
@@ -237,23 +239,21 @@ function AddProduct() {
 
               </option>
 
-              <option value="Apple">
+              {brands.map((brand) => (
 
-                Apple
+                <option
 
-              </option>
+                  key={brand.id}
 
-              <option value="Samsung">
+                  value={brand.value}
 
-                Samsung
+                >
 
-              </option>
+                  {brand.label}
 
-              <option value="Xiaomi">
+                </option>
 
-                Xiaomi
-
-              </option>
+              ))}
 
             </select>
 
@@ -264,9 +264,7 @@ function AddProduct() {
               onChange={(event) =>
 
                 setCategoria(
-
                   event.target.value
-
                 )
 
               }
@@ -281,23 +279,21 @@ function AddProduct() {
 
               </option>
 
-              <option value="smartphones">
+              {categories.map((category) => (
 
-                Smartphones
+                <option
 
-              </option>
+                  key={category.id}
 
-              <option value="laptops">
+                  value={category.value}
 
-                Laptops
+                >
 
-              </option>
+                  {category.label}
 
-              <option value="smartwatch">
+                </option>
 
-                Smartwatch
-
-              </option>
+              ))}
 
             </select>
 
@@ -314,9 +310,7 @@ function AddProduct() {
               onChange={(event) =>
 
                 setStock(
-
                   event.target.value
-
                 )
 
               }

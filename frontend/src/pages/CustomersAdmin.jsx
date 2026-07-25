@@ -1,28 +1,119 @@
 import {
-  useContext
+  useEffect,
+  useState
 } from "react";
 
 import AdminSidebar from "../components/AdminSidebar";
 
 import {
-  DataContext
-} from "../context/DataContext";
+  getUsers
+} from "../services/authService";
+
+import {
+  getOrders
+} from "../services/ordersService";
 
 import "../styles/CustomersAdmin.css";
 
 function CustomersAdmin() {
 
-  const {
+  const [
 
     users,
 
-    orders
+    setUsers
 
-  } = useContext(
+  ] = useState([]);
 
-    DataContext
+  const [
 
-  );
+    orders,
+
+    setOrders
+
+  ] = useState([]);
+
+  const [
+
+    loading,
+
+    setLoading
+
+  ] = useState(true);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Obtener usuarios y pedidos
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+
+    const loadData = async () => {
+
+      try {
+
+        const [
+
+          usersData,
+
+          ordersData
+
+        ] = await Promise.all([
+
+          getUsers(),
+
+          getOrders()
+
+        ]);
+
+        setUsers(usersData);
+
+        setOrders(ordersData);
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    loadData();
+
+  }, []);
+
+  if (loading) {
+
+    return (
+
+      <div className="admin-layout">
+
+        <AdminSidebar />
+
+        <main className="admin-content">
+
+          <h2>
+
+            Cargando clientes...
+
+          </h2>
+
+        </main>
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -42,7 +133,9 @@ function CustomersAdmin() {
 
           {
 
-            users.length > 0 ?
+            users.length > 0
+
+            ?
 
             (
 
@@ -58,6 +151,8 @@ function CustomersAdmin() {
 
                     <th>Correo</th>
 
+                    <th>Rol</th>
+
                     <th>Pedidos</th>
 
                   </tr>
@@ -70,37 +165,45 @@ function CustomersAdmin() {
 
                     users.map(
 
-                      (user, index) => {
+                      user => {
 
-                        const orderCount =
+                        const orderCount = orders.filter(
 
-                          orders.filter(
+                          order =>
 
-                            order =>
+                            order.cliente === user.email
 
-                              order.cliente === user.email
-
-                          ).length;
+                        ).length;
 
                         return (
 
-                          <tr key={user.email}>
+                          <tr key={user.id}>
 
                             <td>
 
-                              {index + 1}
+                              {user.id}
 
                             </td>
 
                             <td>
 
-                              {user.nombre}
+                              {
+
+                                `${user.nombre} ${user.apellido}`
+
+                              }
 
                             </td>
 
                             <td>
 
                               {user.email}
+
+                            </td>
+
+                            <td>
+
+                              {user.rol}
 
                             </td>
 

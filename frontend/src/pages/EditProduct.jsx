@@ -16,6 +16,14 @@ import {
 } from "../context/ProductContext";
 
 import {
+  CategoryContext
+} from "../context/CategoryContext";
+
+import {
+  BrandContext
+} from "../context/BrandContext";
+
+import {
   NotificationContext
 } from "../context/NotificationContext";
 
@@ -38,6 +46,26 @@ function EditProduct() {
   } = useContext(
 
     ProductContext
+
+  );
+
+  const {
+
+    categories
+
+  } = useContext(
+
+    CategoryContext
+
+  );
+
+  const {
+
+    brands
+
+  } = useContext(
+
+    BrandContext
 
   );
 
@@ -99,7 +127,13 @@ function EditProduct() {
 
   }, [product]);
 
-  const handleSubmit = (event) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Actualizar producto
+  |--------------------------------------------------------------------------
+  */
+
+  const handleSubmit = async (event) => {
 
     event.preventDefault();
 
@@ -111,7 +145,7 @@ function EditProduct() {
 
       descripcion,
 
-      precio,
+      precio: Number(precio),
 
       marca,
 
@@ -121,11 +155,25 @@ function EditProduct() {
 
     };
 
-    updateProduct(
+    const success = await updateProduct(
 
       updatedProduct
 
     );
+
+    if (!success) {
+
+      showNotification(
+
+        "No fue posible actualizar el producto.",
+
+        "error"
+
+      );
+
+      return;
+
+    }
 
     showNotification(
 
@@ -231,7 +279,9 @@ function EditProduct() {
 
             <input
 
-              type="text"
+              type="number"
+
+              min="0"
 
               value={precio}
 
@@ -267,23 +317,27 @@ function EditProduct() {
 
             >
 
-              <option value="Apple">
+              <option value="">
 
-                Apple
-
-              </option>
-
-              <option value="Samsung">
-
-                Samsung
+                Seleccione una marca
 
               </option>
 
-              <option value="Xiaomi">
+              {brands.map((brand) => (
 
-                Xiaomi
+                <option
 
-              </option>
+                  key={brand.id}
+
+                  value={brand.value}
+
+                >
+
+                  {brand.label}
+
+                </option>
+
+              ))}
 
             </select>
 
@@ -305,23 +359,27 @@ function EditProduct() {
 
             >
 
-              <option value="smartphones">
+              <option value="">
 
-                Smartphones
-
-              </option>
-
-              <option value="laptops">
-
-                Laptops
+                Seleccione una categoría
 
               </option>
 
-              <option value="smartwatch">
+              {categories.map((category) => (
 
-                Smartwatch
+                <option
 
-              </option>
+                  key={category.id}
+
+                  value={category.value}
+
+                >
+
+                  {category.label}
+
+                </option>
+
+              ))}
 
             </select>
 

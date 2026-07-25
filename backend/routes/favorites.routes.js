@@ -16,13 +16,13 @@ const router = express.Router();
 
 /*
 |--------------------------------------------------------------------------
-| Obtener favoritos de un usuario
+| Obtener favoritos del usuario autenticado
 |--------------------------------------------------------------------------
 */
 
 router.get(
 
-  "/:usuario_id",
+  "/",
 
   verifyToken,
 

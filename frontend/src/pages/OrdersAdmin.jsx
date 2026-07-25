@@ -1,26 +1,95 @@
 import {
-  useContext
+  useEffect,
+  useState
 } from "react";
 
 import AdminSidebar from "../components/AdminSidebar";
 
 import {
-  DataContext
-} from "../context/DataContext";
+  getOrders
+} from "../services/ordersService";
+
+import formatCurrency from "../utils/formatCurrency";
 
 import "../styles/OrdersAdmin.css";
 
 function OrdersAdmin() {
 
-  const {
+  const [
 
-    orders
+    orders,
 
-  } = useContext(
+    setOrders
 
-    DataContext
+  ] = useState([]);
 
-  );
+  const [
+
+    loading,
+
+    setLoading
+
+  ] = useState(true);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Obtener pedidos
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+
+    const loadOrders = async () => {
+
+      try {
+
+        const data = await getOrders();
+
+        setOrders(data);
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    loadOrders();
+
+  }, []);
+
+  if (loading) {
+
+    return (
+
+      <div className="admin-layout">
+
+        <AdminSidebar />
+
+        <main className="admin-content">
+
+          <h2>
+
+            Cargando pedidos...
+
+          </h2>
+
+        </main>
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -40,7 +109,9 @@ function OrdersAdmin() {
 
           {
 
-            orders.length > 0 ?
+            orders.length > 0
+
+            ?
 
             (
 
@@ -86,19 +157,31 @@ function OrdersAdmin() {
 
                           <td>
 
-                            {order.fecha}
+                            {
+
+                              new Date(order.fecha)
+
+                                .toLocaleDateString(
+
+                                  "es-CL"
+
+                                )
+
+                            }
 
                           </td>
 
                           <td>
 
-                            $
+                            {
 
-                            {order.total.toLocaleString(
+                              formatCurrency(
 
-                              "es-CL"
+                                Number(order.total)
 
-                            )}
+                              )
+
+                            }
 
                           </td>
 

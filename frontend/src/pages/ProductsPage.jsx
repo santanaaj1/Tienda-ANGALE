@@ -16,37 +16,31 @@ import {
   ProductContext
 } from "../context/ProductContext";
 
-import categories from "../data/categories";
+import {
+  CategoryContext
+} from "../context/CategoryContext";
 
 import "../styles/ProductsPage.css";
 
 function ProductsPage() {
 
   const {
-
     products
-
-  } = useContext(
-
-    ProductContext
-
-  );
+  } = useContext(ProductContext);
 
   const {
+    categories
+  } = useContext(CategoryContext);
 
+  const {
     category
-
   } = useParams();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   const [
-
     selectedBrand,
-
     setSelectedBrand
-
   ] = useState("");
 
   useEffect(() => {
@@ -55,19 +49,19 @@ function ProductsPage() {
 
   }, [category]);
 
-  const currentCategory =
+  const showingAllProducts = !category;
 
-    categories.find(
+  const currentCategory = categories.find(
 
-      item =>
+    item => item.value === category
 
-        item.value === category
+  );
 
-    );
+  const pageTitle = showingAllProducts
 
-  const pageTitle =
+    ? "Todos los Productos"
 
-    currentCategory
+    : currentCategory
 
       ? currentCategory.label
 
@@ -75,27 +69,27 @@ function ProductsPage() {
 
   const brands = useMemo(() => {
 
+    const sourceProducts = showingAllProducts
+
+      ? products
+
+      : products.filter(
+
+          product =>
+
+            product.categoria === category
+
+        );
+
     return [
 
       ...new Set(
 
-        products
+        sourceProducts.map(
 
-          .filter(
+          product => product.marca
 
-            product =>
-
-              product.categoria === category
-
-          )
-
-          .map(
-
-            product =>
-
-              product.marca
-
-          )
+        )
 
       )
 
@@ -105,27 +99,29 @@ function ProductsPage() {
 
     products,
 
-    category
+    category,
+
+    showingAllProducts
 
   ]);
 
-  const filteredProducts =
+  const filteredProducts = products.filter(product => {
 
-    products.filter(product => {
+    const categoryMatch =
 
-      const categoryMatch =
+      showingAllProducts ||
 
-        product.categoria === category;
+      product.categoria === category;
 
-      const brandMatch =
+    const brandMatch =
 
-        selectedBrand === "" ||
+      selectedBrand === "" ||
 
-        product.marca === selectedBrand;
+      product.marca === selectedBrand;
 
-      return categoryMatch && brandMatch;
+    return categoryMatch && brandMatch;
 
-    });
+  });
 
   return (
 
@@ -168,6 +164,28 @@ function ProductsPage() {
               Categoría
 
             </h4>
+
+            <label>
+
+              <input
+
+                type="radio"
+
+                name="category"
+
+                checked={showingAllProducts}
+
+                onChange={() =>
+
+                  navigate("/products")
+
+                }
+
+              />
+
+              Todas
+
+            </label>
 
             {
 
@@ -299,59 +317,41 @@ function ProductsPage() {
 
             filteredProducts.length > 0
 
-            ?
+              ? (
 
-            (
+                  filteredProducts.map(product => (
 
-              filteredProducts.map(
+                    <ProductCard
 
-                product => (
+                      key={product.id}
 
-                  <ProductCard
+                      {...product}
 
-                    key={product.id}
+                    />
 
-                    id={product.id}
-
-                    nombre={product.nombre}
-
-                    descripcion={product.descripcion}
-
-                    precio={product.precio}
-
-                    icono={product.icono}
-
-                    stock={product.stock}
-
-                  />
+                  ))
 
                 )
 
-              )
+              : (
 
-            )
+                  <div className="empty-products">
 
-            :
+                    <h2>
 
-            (
+                      No hay productos disponibles
 
-              <div className="empty-products">
+                    </h2>
 
-                <h2>
+                    <p>
 
-                  No hay productos disponibles
+                      No existen productos con los filtros seleccionados.
 
-                </h2>
+                    </p>
 
-                <p>
+                  </div>
 
-                  No existen productos con los filtros seleccionados.
-
-                </p>
-
-              </div>
-
-            )
+                )
 
           }
 

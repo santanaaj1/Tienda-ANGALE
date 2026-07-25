@@ -38,7 +38,7 @@ function FeaturedProducts() {
 
           products.map(
 
-            producto => (
+            (producto) => (
 
               <ProductCard
 
@@ -53,6 +53,12 @@ function FeaturedProducts() {
                 precio={producto.precio}
 
                 icono={producto.icono}
+
+                image={producto.image}
+
+                marca={producto.marca}
+
+                categoria={producto.categoria}
 
                 stock={producto.stock}
 

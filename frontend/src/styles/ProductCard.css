@@ -1,122 +1,115 @@
 .product-card {
 
   position: relative;
-
   width: 280px;
-
   min-height: 470px;
-
   display: flex;
-
   flex-direction: column;
-
-  background-color: white;
-
+  background: #ffffff;
   border-radius: 18px;
-
   padding: 25px;
-
-  box-shadow: 0 5px 20px rgba(0,0,0,.1);
-
-  transition: all .3s;
+  box-shadow: 0 5px 20px rgba(0,0,0,.10);
+  transition: all .3s ease;
 
 }
 
 .product-card:hover {
 
-  transform: translateY(-10px);
-
-  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,.15);
 
 }
 
 .favorite-button {
 
   position: absolute;
-
   top: 18px;
-
   right: 18px;
-
   border: none;
-
-  background: none;
-
-  font-size: 30px;
-
+  background: transparent;
+  font-size: 28px;
   cursor: pointer;
-
   transition: .3s;
+  z-index: 5;
 
 }
 
 .favorite-button:hover {
 
-  transform: scale(1.2);
+  transform: scale(1.15);
 
 }
+
+/* ---------- CONTENEDOR DE LA IMAGEN ---------- */
 
 .product-image {
 
-  height: 200px;
-
+  width: 100%;
+  height: 190px;
   display: flex;
-
   justify-content: center;
-
   align-items: center;
+  overflow: hidden;
+  margin-bottom: 18px;
 
-  font-size: 85px;
-
-  margin-bottom: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
 
 }
+
+/* ---------- IMAGEN ---------- */
+
+.product-image-file {
+
+  width: 90%;
+  height: 90%;
+  object-fit: contain;
+  display: block;
+
+}
+
+/* ---------- TITULO ---------- */
 
 .product-title {
 
-  min-height: 60px;
-
-  font-size: 24px;
-
+  min-height: 58px;
+  font-size: 22px;
   font-weight: 700;
-
   color: #0f172a;
-
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
 }
+
+/* ---------- DESCRIPCIÓN ---------- */
 
 .product-description {
 
-  min-height: 55px;
-
+  min-height: 78px;
   color: #64748b;
-
-  line-height: 1.6;
-
-  margin-bottom: 18px;
+  line-height: 1.55;
+  font-size: 15px;
+  margin-bottom: 15px;
 
 }
+
+/* ---------- PRECIO ---------- */
 
 .product-price {
 
-  font-size: 28px;
-
+  font-size: 30px;
   font-weight: bold;
-
   color: #2563eb;
-
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 
 }
+
+/* ---------- STOCK ---------- */
 
 .product-stock {
 
   font-size: 15px;
-
-  margin-bottom: 18px;
-
   font-weight: 600;
+  margin-bottom: 18px;
 
 }
 
@@ -132,42 +125,33 @@
 
 }
 
+/* ---------- BOTÓN ---------- */
+
 .product-button {
 
   margin-top: auto;
-
   width: 100%;
-
   padding: 14px;
-
   border: none;
-
   border-radius: 10px;
-
-  background-color: #f97316;
-
+  background: #f97316;
   color: white;
-
   font-size: 15px;
-
   font-weight: bold;
-
   cursor: pointer;
-
   transition: .3s;
 
 }
 
 .product-button:hover {
 
-  background-color: #ea580c;
+  background: #ea580c;
 
 }
 
 .product-button:disabled {
 
-  background-color: #94a3b8;
-
+  background: #94a3b8;
   cursor: not-allowed;
 
 }
@@ -175,22 +159,18 @@
 .product-link {
 
   text-decoration: none;
-
   color: inherit;
 
 }
 
-
-/* TABLET */
+/* ---------- TABLET ---------- */
 
 @media (max-width:1024px) {
 
   .product-card {
 
     width: 240px;
-
     min-height: 440px;
-
     padding: 20px;
 
   }
@@ -199,53 +179,58 @@
 
     height: 170px;
 
-    font-size: 70px;
-
-  }
-
-  .product-title {
-
-    font-size: 21px;
-
-  }
-
-  .product-price {
-
-    font-size: 24px;
-
-  }
-
-}
-
-
-/* CELULAR */
-
-@media (max-width:768px) {
-
-  .product-card {
-
-    width: 100%;
-
-    max-width: 360px;
-
-    min-height: auto;
-
-    padding: 20px;
-
-  }
-
-  .product-image {
-
-    height: 150px;
-
-    font-size: 60px;
-
   }
 
   .product-title {
 
     font-size: 20px;
 
+  }
+
+  .product-description {
+
+    min-height: 70px;
+    font-size: 14px;
+
+  }
+
+  .product-price {
+
+    font-size: 26px;
+
+  }
+
+}
+
+/* ---------- CELULAR ---------- */
+
+@media (max-width:768px) {
+
+  .product-card {
+
+    width: 100%;
+    max-width: 360px;
+    min-height: auto;
+    padding: 20px;
+
+  }
+
+  .product-image {
+
+    height: 160px;
+
+  }
+
+  .product-image-file {
+
+    width: 85%;
+    height: 85%;
+
+  }
+
+  .product-title {
+
+    font-size: 20px;
     min-height: auto;
 
   }

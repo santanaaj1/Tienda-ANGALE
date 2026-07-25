@@ -6,6 +6,8 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import { NotificationContext } from "../context/NotificationContext";
 
+import formatCurrency from "../utils/formatCurrency";
+
 import "../styles/Cart.css";
 
 function Cart() {
@@ -27,31 +29,39 @@ function Cart() {
     removeFromCart
   } = useContext(CartContext);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Total de artículos
+  |--------------------------------------------------------------------------
+  */
+
   const totalItems = cartItems.reduce(
+
     (total, item) =>
+
       total + item.quantity,
+
     0
+
   );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Total de la compra
+  |--------------------------------------------------------------------------
+  */
 
   const totalAmount = cartItems.reduce(
-    (total, item) => {
 
-      const price = Number(
-        item.precio
-          .replace("$", "")
-          .replaceAll(".", "")
-      );
+    (total, item) =>
 
-      return total +
-        (price * item.quantity);
+      total +
 
-    },
+      (Number(item.precio) * item.quantity),
+
     0
-  );
 
-  const formattedTotal =
-    "$" +
-    totalAmount.toLocaleString("es-CL");
+  );
 
   const handleCheckout = () => {
 
@@ -97,26 +107,30 @@ function Cart() {
 
                 const subtotal =
 
-                  Number(
+                  Number(item.precio) *
 
-                    item.precio
-                      .replace("$", "")
-                      .replaceAll(".", "")
-
-                  ) * item.quantity;
+                  item.quantity;
 
                 return (
 
                   <div
+
                     key={item.id}
+
                     className="cart-item"
+
                   >
 
                     <button
+
                       className="remove-item"
+
                       onClick={() =>
+
                         removeFromCart(item.id)
+
                       }
+
                     >
 
                       ✕
@@ -125,7 +139,27 @@ function Cart() {
 
                     <div className="cart-image">
 
-                      {item.icono}
+                      {
+
+                        item.image ? (
+
+                          <img
+
+                            src={`http://localhost:3000/images/products/${item.image}`}
+
+                            alt={item.nombre}
+
+                            className="cart-product-image"
+
+                          />
+
+                        ) : (
+
+                          item.icono
+
+                        )
+
+                      }
 
                     </div>
 
@@ -139,16 +173,20 @@ function Cart() {
 
                       <p className="cart-price">
 
-                        {item.precio}
+                        {formatCurrency(item.precio)}
 
                       </p>
 
                       <div className="cart-quantity">
 
                         <button
+
                           onClick={() =>
+
                             decreaseQuantity(item.id)
+
                           }
+
                         >
 
                           -
@@ -162,9 +200,13 @@ function Cart() {
                         </span>
 
                         <button
+
                           onClick={() =>
+
                             increaseQuantity(item.id)
+
                           }
+
                         >
 
                           +
@@ -175,9 +217,7 @@ function Cart() {
 
                       <p className="item-subtotal">
 
-                        Subtotal: $
-
-                        {subtotal.toLocaleString("es-CL")}
+                        Subtotal: {formatCurrency(subtotal)}
 
                       </p>
 
@@ -223,31 +263,19 @@ function Cart() {
 
           <p>
 
-            Productos distintos:
-
-            {" "}
-
-            {cartItems.length}
+            Productos distintos: {cartItems.length}
 
           </p>
 
           <p>
 
-            Artículos:
-
-            {" "}
-
-            {totalItems}
+            Artículos: {totalItems}
 
           </p>
 
           <h3>
 
-            Total:
-
-            {" "}
-
-            {formattedTotal}
+            Total: {formatCurrency(totalAmount)}
 
           </h3>
 
@@ -270,7 +298,9 @@ function Cart() {
             className="continue-button"
 
             onClick={() =>
+
               navigate("/")
+
             }
 
           >

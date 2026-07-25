@@ -25,6 +25,8 @@ import NotFound from "./pages/NotFound";
 
 import Footer from "./components/Footer";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -32,7 +34,8 @@ function App() {
   return (
 
     <>
-
+      <ScrollToTop />
+      
       <Header />
 
       <Routes>
@@ -66,7 +69,7 @@ function App() {
         />
 
         <Route
-          path="/order-confirmation"
+          path="/order-confirmation/:id"
           element={
             <PrivateRoute>
 
@@ -81,6 +84,11 @@ function App() {
           element={<ProductDetail />}
         />
 
+        <Route
+          path="/products"
+          element={<ProductsPage />}
+        />
+        
         <Route
           path="/products/:category"
           element={<ProductsPage />}

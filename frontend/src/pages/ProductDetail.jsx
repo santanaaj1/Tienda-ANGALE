@@ -26,64 +26,36 @@ import {
   NotificationContext
 } from "../context/NotificationContext";
 
+import formatCurrency from "../utils/formatCurrency";
+
 function ProductDetail() {
 
-  const { id } =
-    useParams();
+  const { id } = useParams();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
   const {
-
     products
-
-  } = useContext(
-
-    ProductContext
-
-  );
+  } = useContext(ProductContext);
 
   const {
-
     addToCart,
-
     cartItems
-
-  } = useContext(
-
-    CartContext
-
-  );
+  } = useContext(CartContext);
 
   const {
-
     currentUser
-
-  } = useContext(
-
-    AuthContext
-
-  );
+  } = useContext(AuthContext);
 
   const {
-
     showNotification
+  } = useContext(NotificationContext);
 
-  } = useContext(
-
-    NotificationContext
-
-  );
-
-  const [quantity, setQuantity] =
-    useState(1);
+  const [quantity, setQuantity] = useState(1);
 
   const product = products.find(
 
-    item =>
-
-      item.id === Number(id)
+    item => item.id === Number(id)
 
   );
 
@@ -109,9 +81,7 @@ function ProductDetail() {
 
     cartItems.find(
 
-      item =>
-
-        item.id === product.id
+      item => item.id === product.id
 
     );
 
@@ -125,25 +95,11 @@ function ProductDetail() {
 
   const availableStock =
 
-    product.stock -
+    product.stock - quantityInCart;
 
-    quantityInCart;
+  const priceNumber = Number(product.precio);
 
-  const priceNumber = Number(
-
-    product.precio
-
-      .replace("$", "")
-
-      .replaceAll(".", "")
-
-  );
-
-  const subtotal =
-
-    priceNumber *
-
-    quantity;
+  const subtotal = priceNumber * quantity;
 
   const handleAddToCart = () => {
 
@@ -196,12 +152,10 @@ function ProductDetail() {
       {
 
         id: product.id,
-
         nombre: product.nombre,
-
-        precio: product.precio,
-
-        icono: product.icono
+        precio: priceNumber,
+        icono: product.icono,
+        image: product.image
 
       },
 
@@ -221,7 +175,23 @@ function ProductDetail() {
 
           <div className="product-image-large">
 
-            {product.icono}
+            {
+
+              product.image ? (
+
+                <img
+                  src={`http://localhost:3000/images/products/${product.image}`}
+                  alt={product.nombre}
+                  className="product-image-large-file"
+                />
+
+              ) : (
+
+                product.icono
+
+              )
+
+            }
 
           </div>
 
@@ -255,17 +225,13 @@ function ProductDetail() {
 
           <p className="detail-price">
 
-            {product.precio}
+            {formatCurrency(priceNumber)}
 
           </p>
 
           <p className="stock-available">
 
-            Stock disponible:
-
-            {" "}
-
-            {availableStock}
+            Stock disponible: {availableStock}
 
           </p>
 
@@ -277,11 +243,7 @@ function ProductDetail() {
 
                 quantity > 1 &&
 
-                setQuantity(
-
-                  quantity - 1
-
-                )
+                setQuantity(quantity - 1)
 
               }
 
@@ -303,11 +265,7 @@ function ProductDetail() {
 
                 quantity < availableStock &&
 
-                setQuantity(
-
-                  quantity + 1
-
-                )
+                setQuantity(quantity + 1)
 
               }
 
@@ -321,27 +279,13 @@ function ProductDetail() {
 
           <p className="quantity-label">
 
-            Cantidad seleccionada:
-
-            {" "}
-
-            {quantity}
+            Cantidad seleccionada: {quantity}
 
           </p>
 
           <p className="subtotal">
 
-            Subtotal:
-
-            {" "}
-
-            $
-
-            {subtotal.toLocaleString(
-
-              "es-CL"
-
-            )}
+            Subtotal: {formatCurrency(subtotal)}
 
           </p>
 
@@ -349,17 +293,9 @@ function ProductDetail() {
 
             className="add-cart-button"
 
-            disabled={
+            disabled={availableStock === 0}
 
-              availableStock === 0
-
-            }
-
-            onClick={
-
-              handleAddToCart
-
-            }
+            onClick={handleAddToCart}
 
           >
 
@@ -383,11 +319,7 @@ function ProductDetail() {
 
         className="back-button-detail"
 
-        onClick={() =>
-
-          navigate(-1)
-
-        }
+        onClick={() => navigate(-1)}
 
       >
 

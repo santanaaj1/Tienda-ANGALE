@@ -1,6 +1,15 @@
 import "../styles/Banner.css";
+import { useNavigate } from "react-router-dom";
 
 function Banner() {
+
+  const navigate = useNavigate();
+
+  const handleShopNow = () => {
+
+    navigate("/products");
+
+  };
 
   return (
 
@@ -21,7 +30,9 @@ function Banner() {
 
         </p>
 
-        <button>
+        <button
+          onClick={handleShopNow}
+        >
 
           Comprar ahora
 

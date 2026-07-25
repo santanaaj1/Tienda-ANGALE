@@ -6,9 +6,13 @@ import {
 
   registerUser,
 
-  login
+  login,
+
+  changePassword
 
 } from "../controllers/users.controller.js";
+
+import verifyToken from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -21,6 +25,8 @@ const router = express.Router();
 router.get(
 
   "/",
+
+  verifyToken,
 
   readUsers
 
@@ -51,6 +57,22 @@ router.post(
   "/login",
 
   login
+
+);
+
+/*
+|--------------------------------------------------------------------------
+| Cambiar contraseña
+|--------------------------------------------------------------------------
+*/
+
+router.put(
+
+  "/password",
+
+  verifyToken,
+
+  changePassword
 
 );
 

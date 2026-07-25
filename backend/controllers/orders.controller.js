@@ -4,17 +4,21 @@ import {
 
   getOrderById,
 
-  createOrder,
-
-  createOrderDetail,
+  createCompleteOrder,
 
   deleteOrder
 
 } from "../queries/orders.js";
 
+import {
+
+  productExists
+
+} from "../queries/products.js";
+
 /*
 |--------------------------------------------------------------------------
-| Obtener pedidos del usuario
+| Obtener pedidos
 |--------------------------------------------------------------------------
 */
 
@@ -22,7 +26,7 @@ const readOrders = async (request, response) => {
 
   try {
 
-    const { usuario_id } = request.query;
+    const usuario_id = request.user.id;
 
     const orders = await getOrders(
 
@@ -64,7 +68,7 @@ const readOrderById = async (request, response) => {
 
     const { id } = request.params;
 
-    const { usuario_id } = request.query;
+    const usuario_id = request.user.id;
 
     const order = await getOrderById(
 
@@ -73,6 +77,16 @@ const readOrderById = async (request, response) => {
       usuario_id
 
     );
+
+    if (!order) {
+
+      return response.status(404).json({
+
+        message: "Pedido no encontrado"
+
+      });
+
+    }
 
     response.status(200).json(
 
@@ -106,11 +120,9 @@ const addOrder = async (request, response) => {
 
   try {
 
-    console.log(request.body);
+    const usuario_id = request.user.id;
 
     const {
-
-      usuario_id,
 
       total,
 
@@ -118,31 +130,125 @@ const addOrder = async (request, response) => {
 
     } = request.body;
 
-    const order = await createOrder(
+    /*
+    |--------------------------------------------------------------------------
+    | Validación básica del pedido
+    |--------------------------------------------------------------------------
+    */
 
-      usuario_id,
+    if (
 
-      total
+      !Array.isArray(productos) ||
 
-    );
+      productos.length === 0
 
-    for (const producto of productos) {
+    ) {
 
-      await createOrderDetail(
+      return response.status(400).json({
 
-        order.id,
+        message: "El pedido debe contener al menos un producto."
 
-        producto.producto_id,
-
-        producto.cantidad,
-
-        producto.precio
-
-      );
+      });
 
     }
 
-    response.status(201).json(order);
+    /*
+    |--------------------------------------------------------------------------
+    | Validación de cada producto
+    |--------------------------------------------------------------------------
+    */
+
+    for (const producto of productos) {
+
+      if (
+
+        producto.producto_id === undefined ||
+
+        producto.producto_id === null ||
+
+        !Number.isInteger(producto.producto_id)
+
+      ) {
+
+        return response.status(400).json({
+
+          message: "El ID del producto es inválido."
+
+        });
+
+      }
+
+      if (
+
+        producto.cantidad === undefined ||
+
+        producto.cantidad === null ||
+
+        !Number.isInteger(producto.cantidad)
+
+      ) {
+
+        return response.status(400).json({
+
+          message: "La cantidad del producto debe ser un número entero."
+
+        });
+
+      }
+
+      if (
+
+        producto.cantidad <= 0
+
+      ) {
+
+        return response.status(400).json({
+
+          message: "La cantidad del producto debe ser mayor que cero."
+
+        });
+
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Verificar que el producto exista
+      |--------------------------------------------------------------------------
+      */
+
+      const exists = await productExists(
+
+        producto.producto_id
+
+      );
+
+      if (!exists) {
+
+        return response.status(400).json({
+
+          message: `El producto con ID ${producto.producto_id} no existe.`
+
+        });
+
+      }
+
+    }
+
+    const order = await createCompleteOrder(
+
+      usuario_id,
+
+      total,
+
+      productos
+
+    );
+
+    response.status(201).json(
+
+      order
+
+    );
 
   }
 
@@ -152,7 +258,7 @@ const addOrder = async (request, response) => {
 
     response.status(500).json({
 
-      message: "Error al crear el pedido"
+      message: error.message || "Error al crear el pedido"
 
     });
 
@@ -172,15 +278,25 @@ const removeOrder = async (request, response) => {
 
     const { id } = request.params;
 
-    const { usuario_id } = request.query;
+    const usuario_id = request.user.id;
 
-    await deleteOrder(
+    const order = await deleteOrder(
 
       id,
 
       usuario_id
 
     );
+
+    if (!order) {
+
+      return response.status(404).json({
+
+        message: "Pedido no encontrado"
+
+      });
+
+    }
 
     response.status(200).json({
 

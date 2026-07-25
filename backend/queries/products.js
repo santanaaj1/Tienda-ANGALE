@@ -10,7 +10,17 @@ const getProducts = async () => {
 
   const query = `
 
-    SELECT *
+    SELECT
+
+      id,
+      nombre,
+      descripcion,
+      precio,
+      marca,
+      categoria,
+      stock,
+      icono,
+      image
 
     FROM productos
 
@@ -34,7 +44,65 @@ const getProductById = async (id) => {
 
   const query = `
 
-    SELECT *
+    SELECT
+
+      id,
+      nombre,
+      descripcion,
+      precio,
+      marca,
+      categoria,
+      stock,
+      icono,
+      image
+
+    FROM productos
+
+    WHERE id = $1;
+
+  `;
+
+  const result = await pool.query(query, [id]);
+
+  return result.rows[0];
+
+};
+
+/*
+|--------------------------------------------------------------------------
+| Verificar existencia de un producto
+|--------------------------------------------------------------------------
+*/
+
+const productExists = async (id) => {
+
+  const query = `
+
+    SELECT id
+
+    FROM productos
+
+    WHERE id = $1;
+
+  `;
+
+  const result = await pool.query(query, [id]);
+
+  return result.rowCount > 0;
+
+};
+
+/*
+|--------------------------------------------------------------------------
+| Obtener únicamente el precio de un producto
+|--------------------------------------------------------------------------
+*/
+
+const getProductPrice = async (id) => {
+
+  const query = `
+
+    SELECT precio
 
     FROM productos
 
@@ -64,15 +132,14 @@ const createProduct = async (product) => {
     marca,
     categoria,
     stock,
-    icono
+    icono,
+    image
 
   } = product;
 
   const query = `
 
-    INSERT INTO productos
-
-    (
+    INSERT INTO productos (
 
       nombre,
       descripcion,
@@ -80,15 +147,14 @@ const createProduct = async (product) => {
       marca,
       categoria,
       stock,
-      icono
+      icono,
+      image
 
     )
 
-    VALUES
+    VALUES (
 
-    (
-
-      $1,$2,$3,$4,$5,$6,$7
+      $1,$2,$3,$4,$5,$6,$7,$8
 
     )
 
@@ -104,7 +170,8 @@ const createProduct = async (product) => {
     marca,
     categoria,
     stock,
-    icono
+    icono ?? "📦",
+    image ?? null
 
   ];
 
@@ -130,7 +197,8 @@ const updateProduct = async (id, product) => {
     marca,
     categoria,
     stock,
-    icono
+    icono,
+    image
 
   } = product;
 
@@ -141,20 +209,15 @@ const updateProduct = async (id, product) => {
     SET
 
       nombre = $1,
-
       descripcion = $2,
-
       precio = $3,
-
       marca = $4,
-
       categoria = $5,
-
       stock = $6,
+      icono = $7,
+      image = $8
 
-      icono = $7
-
-    WHERE id = $8
+    WHERE id = $9
 
     RETURNING *;
 
@@ -169,11 +232,60 @@ const updateProduct = async (id, product) => {
     categoria,
     stock,
     icono,
+    image,
     id
 
   ];
 
   const result = await pool.query(query, values);
+
+  return result.rows[0];
+
+};
+
+/*
+|--------------------------------------------------------------------------
+| Descontar stock
+|--------------------------------------------------------------------------
+*/
+
+const decreaseStock = async (
+
+  id,
+
+  quantity,
+
+  client = pool
+
+) => {
+
+  const query = `
+
+    UPDATE productos
+
+    SET stock = stock - $2
+
+    WHERE id = $1
+
+    AND stock >= $2
+
+    RETURNING *;
+
+  `;
+
+  const result = await client.query(
+
+    query,
+
+    [
+
+      id,
+
+      quantity
+
+    ]
+
+  );
 
   return result.rows[0];
 
@@ -208,13 +320,12 @@ const deleteProduct = async (id) => {
 export {
 
   getProducts,
-
   getProductById,
-
+  productExists,
+  getProductPrice,
   createProduct,
-
   updateProduct,
-
+  decreaseStock,
   deleteProduct
 
 };

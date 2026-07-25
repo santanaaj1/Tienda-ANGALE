@@ -1,17 +1,43 @@
 import {
+  useContext,
   useEffect,
   useState
 } from "react";
 
 import {
-  useNavigate
+  useNavigate,
+  useParams
 } from "react-router-dom";
+
+import {
+  AuthContext
+} from "../context/AuthContext";
+
+import {
+  getOrderById
+} from "../services/ordersService";
+
+import formatCurrency from "../utils/formatCurrency";
 
 import "../styles/OrderConfirmation.css";
 
 function OrderConfirmation() {
 
   const navigate = useNavigate();
+
+  const { id } = useParams();
+
+  const {
+
+    currentUser,
+
+    loading
+
+  } = useContext(
+
+    AuthContext
+
+  );
 
   const [
 
@@ -21,53 +47,177 @@ function OrderConfirmation() {
 
   ] = useState(null);
 
+  const [
+
+    isLoading,
+
+    setIsLoading
+
+  ] = useState(true);
+
+  const [
+
+    error,
+
+    setError
+
+  ] = useState("");
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cargar pedido
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
 
-    const savedOrder = JSON.parse(
+    const loadOrder = async () => {
 
-      localStorage.getItem(
+      try {
 
-        "lastOrder"
+        const data = await getOrderById(
 
-      )
+          id,
 
-    );
+          currentUser.id
 
-    if (!savedOrder) {
+        );
 
-      navigate("/");
+        setOrder(data);
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+        setError(
+
+          "No fue posible cargar el pedido."
+
+        );
+
+      }
+
+      finally {
+
+        setIsLoading(false);
+
+      }
+
+    };
+
+    if (loading) {
 
       return;
 
     }
 
-    setOrder(
+    if (!currentUser) {
 
-      savedOrder
+      navigate("/login");
 
-    );
+      return;
+
+    }
+
+    loadOrder();
 
   }, [
+
+    id,
+
+    currentUser,
+
+    loading,
 
     navigate
 
   ]);
 
-  if (!order) {
+  /*
+  |--------------------------------------------------------------------------
+  | Estados
+  |--------------------------------------------------------------------------
+  */
 
-    return null;
+  if (isLoading) {
+
+    return (
+
+      <div className="confirmation-container">
+
+        <div className="confirmation-card">
+
+          <h2>
+
+            Cargando pedido...
+
+          </h2>
+
+        </div>
+
+      </div>
+
+    );
 
   }
+
+  if (error || !order) {
+
+    return (
+
+      <div className="confirmation-container">
+
+        <div className="confirmation-card">
+
+          <h2>
+
+            Pedido no encontrado.
+
+          </h2>
+
+          <button
+
+            className="home-button"
+
+            onClick={() => navigate("/")}
+
+          >
+
+            Volver al inicio
+
+          </button>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Total artículos
+  |--------------------------------------------------------------------------
+  */
 
   const totalItems = order.items.reduce(
 
     (total, item) =>
 
-      total + item.quantity,
+      total + Number(item.quantity),
 
     0
 
   );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Navegación
+  |--------------------------------------------------------------------------
+  */
 
   const handleHome = () => {
 
@@ -107,7 +257,17 @@ function OrderConfirmation() {
 
         <p>
 
-          Fecha: {order.fecha}
+          Fecha: {
+
+            new Date(order.fecha)
+
+              .toLocaleDateString(
+
+                "es-CL"
+
+              )
+
+          }
 
         </p>
 
@@ -167,13 +327,11 @@ function OrderConfirmation() {
 
           <p>
 
-            Total: $
+            Total: {
 
-            {
+              formatCurrency(
 
-              order.total.toLocaleString(
-
-                "es-CL"
+                order.total
 
               )
 

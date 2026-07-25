@@ -13,14 +13,23 @@ import {
   AuthContext
 } from "../context/AuthContext";
 
+import {
+  registerUser
+} from "../services/authService";
+
 function Login() {
 
   const navigate = useNavigate();
 
   const {
-    login,
-    register
-  } = useContext(AuthContext);
+
+    login
+
+  } = useContext(
+
+    AuthContext
+
+  );
 
   /* LOGIN */
 
@@ -41,6 +50,9 @@ function Login() {
   const [name, setName] =
     useState("");
 
+  const [apellido, setApellido] =
+    useState("");
+
   const [registerEmail, setRegisterEmail] =
     useState("");
 
@@ -56,28 +68,41 @@ function Login() {
   const [registerSuccess, setRegisterSuccess] =
     useState(false);
 
-  /* LOGIN */
+  /*
+  |--------------------------------------------------------------------------
+  | LOGIN
+  |--------------------------------------------------------------------------
+  */
 
-  const handleLogin = (event) => {
+  const handleLogin = async (
+
+    event
+
+  ) => {
 
     event.preventDefault();
 
     if (
+
       loginEmail === "" ||
+
       loginPassword === ""
+
     ) {
 
       setLoginSuccess(false);
 
       setLoginMessage(
+
         "Complete todos los campos."
+
       );
 
       return;
 
     }
 
-    const success = login(
+    const success = await login(
 
       loginEmail,
 
@@ -90,7 +115,9 @@ function Login() {
       setLoginSuccess(false);
 
       setLoginMessage(
+
         "Correo o contraseña incorrectos."
+
       );
 
       return;
@@ -100,16 +127,24 @@ function Login() {
     setLoginSuccess(true);
 
     setLoginMessage(
+
       "Inicio de sesión exitoso."
+
     );
 
     if (
-      loginEmail === "admin@angale.com"
+
+      loginEmail ===
+
+      "admin@angale.com"
+
     ) {
 
       navigate("/admin");
 
-    } else {
+    }
+
+    else {
 
       navigate("/");
 
@@ -117,23 +152,40 @@ function Login() {
 
   };
 
-  /* REGISTER */
+  /*
+  |--------------------------------------------------------------------------
+  | REGISTER
+  |--------------------------------------------------------------------------
+  */
 
-  const handleRegister = (event) => {
+  const handleRegister = async (
+
+    event
+
+  ) => {
 
     event.preventDefault();
 
     if (
+
       name === "" ||
+
+      apellido === "" ||
+
       registerEmail === "" ||
+
       registerPassword === "" ||
+
       confirmPassword === ""
+
     ) {
 
       setRegisterSuccess(false);
 
       setRegisterMessage(
+
         "Complete todos los campos."
+
       );
 
       return;
@@ -141,61 +193,76 @@ function Login() {
     }
 
     if (
+
       registerPassword !==
+
       confirmPassword
+
     ) {
 
       setRegisterSuccess(false);
 
       setRegisterMessage(
+
         "Las contraseñas no coinciden."
+
       );
 
       return;
 
     }
 
-    const success = register(
+    try {
 
-      name,
+      await registerUser({
 
-      registerEmail,
+        nombre: name,
 
-      registerPassword
+        apellido,
 
-    );
+        email: registerEmail,
 
-    if (!success) {
+        password: registerPassword
+
+      });
+
+      setRegisterSuccess(true);
+
+      setRegisterMessage(
+
+        "Cuenta creada correctamente."
+
+      );
+
+      setName("");
+
+      setApellido("");
+
+      setRegisterEmail("");
+
+      setRegisterPassword("");
+
+      setConfirmPassword("");
+
+    }
+
+    catch (error) {
 
       setRegisterSuccess(false);
 
       setRegisterMessage(
-        "Ese correo ya existe."
+
+        error.message
+
       );
 
-      return;
-
     }
-
-    setRegisterSuccess(true);
-
-    setRegisterMessage(
-      "Cuenta creada correctamente."
-    );
-
-    setName("");
-
-    setRegisterEmail("");
-
-    setRegisterPassword("");
-
-    setConfirmPassword("");
 
   };
 
   return (
 
-    <div className="auth-container">
+        <div className="auth-container">
 
       <div className="auth-card">
 
@@ -230,30 +297,51 @@ function Login() {
             </p>
 
             <form
+
               className="auth-form"
+
               onSubmit={handleLogin}
+
             >
 
               <input
+
                 type="email"
+
                 placeholder="Correo electrónico"
+
                 value={loginEmail}
+
                 onChange={(event) =>
+
                   setLoginEmail(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <input
+
                 type="password"
+
                 placeholder="Contraseña"
+
                 value={loginPassword}
+
                 onChange={(event) =>
+
                   setLoginPassword(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <button>
@@ -271,9 +359,13 @@ function Login() {
                 <p
 
                   className={
+
                     loginSuccess
+
                       ? "form-message success-message"
+
                       : "form-message error-message"
+
                   }
 
                 >
@@ -281,7 +373,9 @@ function Login() {
                   {
 
                     loginSuccess
+
                       ? "✅ "
+
                       : "❌ "
 
                   }
@@ -321,52 +415,111 @@ function Login() {
             </p>
 
             <form
+
               className="auth-form"
+
               onSubmit={handleRegister}
+
             >
 
               <input
+
                 type="text"
-                placeholder="Nombre completo"
+
+                placeholder="Nombre"
+
                 value={name}
+
                 onChange={(event) =>
+
                   setName(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <input
+
+                type="text"
+
+                placeholder="Apellido"
+
+                value={apellido}
+
+                onChange={(event) =>
+
+                  setApellido(
+
+                    event.target.value
+
+                  )
+
+                }
+
+              />
+
+              <input
+
                 type="email"
+
                 placeholder="Correo electrónico"
+
                 value={registerEmail}
+
                 onChange={(event) =>
+
                   setRegisterEmail(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <input
+
                 type="password"
+
                 placeholder="Contraseña"
+
                 value={registerPassword}
+
                 onChange={(event) =>
+
                   setRegisterPassword(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <input
+
                 type="password"
+
                 placeholder="Confirmar contraseña"
+
                 value={confirmPassword}
+
                 onChange={(event) =>
+
                   setConfirmPassword(
+
                     event.target.value
+
                   )
+
                 }
+
               />
 
               <button>
@@ -384,9 +537,13 @@ function Login() {
                 <p
 
                   className={
+
                     registerSuccess
+
                       ? "form-message success-message"
+
                       : "form-message error-message"
+
                   }
 
                 >
@@ -394,7 +551,9 @@ function Login() {
                   {
 
                     registerSuccess
+
                       ? "✅ "
+
                       : "❌ "
 
                   }
@@ -412,8 +571,15 @@ function Login() {
         </div>
 
         <button
+
           className="back-button"
-          onClick={() => navigate("/")}
+
+          onClick={() =>
+
+            navigate("/")
+
+          }
+
         >
 
           ← Volver al inicio

@@ -16,6 +16,8 @@ import {
   NotificationContext
 } from "../context/NotificationContext";
 
+import formatCurrency from "../utils/formatCurrency";
+
 import "../styles/ProductsAdmin.css";
 
 function ProductsAdmin() {
@@ -42,7 +44,13 @@ function ProductsAdmin() {
 
   );
 
-  const handleDelete = (id) => {
+  /*
+  |--------------------------------------------------------------------------
+  | Eliminar producto
+  |--------------------------------------------------------------------------
+  */
+
+  const handleDelete = async (id) => {
 
     const confirmDelete = window.confirm(
 
@@ -56,7 +64,25 @@ function ProductsAdmin() {
 
     }
 
-    deleteProduct(id);
+    const success = await deleteProduct(
+
+      id
+
+    );
+
+    if (!success) {
+
+      showNotification(
+
+        "No fue posible eliminar el producto.",
+
+        "error"
+
+      );
+
+      return;
+
+    }
 
     showNotification(
 
@@ -86,7 +112,9 @@ function ProductsAdmin() {
 
           {
 
-            products.length > 0 ?
+            products.length > 0
+
+            ?
 
             (
 
@@ -142,7 +170,7 @@ function ProductsAdmin() {
 
                           <td>
 
-                            {product.precio}
+                            {formatCurrency(product.precio)}
 
                           </td>
 

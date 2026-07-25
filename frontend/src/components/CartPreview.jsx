@@ -4,6 +4,8 @@ import { useContext } from "react";
 
 import { CartContext } from "../context/CartContext";
 
+import formatCurrency from "../utils/formatCurrency";
+
 import "../styles/CartPreview.css";
 
 function CartPreview({ onClose }) {
@@ -11,26 +13,38 @@ function CartPreview({ onClose }) {
   const { cartItems } =
     useContext(CartContext);
 
+  /*
+  |--------------------------------------------------------------------------
+  | Cantidad total de artículos
+  |--------------------------------------------------------------------------
+  */
+
   const totalItems = cartItems.reduce(
+
     (total, item) =>
+
       total + item.quantity,
+
     0
+
   );
 
+  /*
+  |--------------------------------------------------------------------------
+  | Total del carrito
+  |--------------------------------------------------------------------------
+  */
+
   const totalAmount = cartItems.reduce(
-    (total, item) => {
 
-      const price = Number(
-        item.precio
-          .replace("$", "")
-          .replaceAll(".", "")
-      );
+    (total, item) =>
 
-      return total +
-        (price * item.quantity);
+      total +
 
-    },
+      (Number(item.precio) * item.quantity),
+
     0
+
   );
 
   return (
@@ -40,10 +54,15 @@ function CartPreview({ onClose }) {
       <div className="cart-preview-header">
 
         <button
+
           className="cart-preview-close"
+
           onClick={onClose}
+
         >
+
           ✕
+
         </button>
 
         <h3>
@@ -58,56 +77,77 @@ function CartPreview({ onClose }) {
 
         {
 
-          cartItems.length > 0 ?
+          cartItems.length > 0
 
-          (
+            ? (
 
-            cartItems.map((item) => (
+              cartItems.map((item) => (
 
-              <div
-                key={item.id}
-                className="cart-preview-item"
-              >
+                <div
 
-                <div className="cart-preview-icon">
+                  key={item.id}
 
-                  {item.icono}
+                  className="cart-preview-item"
+
+                >
+
+                  <div className="cart-preview-icon">
+
+                    {
+
+                      item.image ? (
+
+                        <img
+
+                          src={`http://localhost:3000/images/products/${item.image}`}
+
+                          alt={item.nombre}
+
+                          className="cart-preview-image"
+
+                        />
+
+                      ) : (
+
+                        item.icono
+
+                      )
+
+                    }
+
+                  </div>
+
+                  <div className="cart-preview-info">
+
+                    <p className="cart-preview-name">
+
+                      {item.nombre}
+
+                    </p>
+
+                    <p className="cart-preview-quantity">
+
+                      Cantidad: {item.quantity}
+
+                    </p>
+
+                  </div>
 
                 </div>
 
-                <div className="cart-preview-info">
+              ))
 
-                  <p className="cart-preview-name">
+            )
 
-                    {item.nombre}
+            : (
 
-                  </p>
+              <p className="empty-cart-message">
 
-                  <p className="cart-preview-quantity">
+                Tu carrito está vacío
 
-                    Cantidad: {item.quantity}
+              </p>
 
-                  </p>
-
-                </div>
-
-              </div>
-
-            ))
-
-          )
-
-          :
-
-          (
-
-            <p className="empty-cart-message">
-
-              Tu carrito está vacío
-
-            </p>
-
-          )
+            )
 
         }
 
@@ -133,9 +173,7 @@ function CartPreview({ onClose }) {
 
             <h4>
 
-              Total: $
-
-              {totalAmount.toLocaleString("es-CL")}
+              Total: {formatCurrency(totalAmount)}
 
             </h4>
 
@@ -149,51 +187,49 @@ function CartPreview({ onClose }) {
 
         {
 
-          cartItems.length > 0 ?
+          cartItems.length > 0
 
-          (
+            ? (
 
-            <Link
+              <Link
 
-              to="/cart"
+                to="/cart"
 
-              className="cart-preview-button"
+                className="cart-preview-button"
 
-              onClick={onClose}
+                onClick={onClose}
 
-            >
+              >
 
-              Ir a mi carrito
+                Ir a mi carrito
 
-            </Link>
+              </Link>
 
-          )
+            )
 
-          :
+            : (
 
-          (
+              <button
 
-            <button
+                className="cart-preview-button"
 
-              className="cart-preview-button"
+                disabled
 
-              disabled
+                style={{
 
-              style={{
+                  opacity: 0.5,
 
-                opacity: 0.5,
+                  cursor: "not-allowed"
 
-                cursor: "not-allowed"
+                }}
 
-              }}
+              >
 
-            >
+                Ir a mi carrito
 
-              Ir a mi carrito
+              </button>
 
-            </button>
-
-          )
+            )
 
         }
 

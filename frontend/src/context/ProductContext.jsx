@@ -1,10 +1,20 @@
 import {
   createContext,
   useState,
-  useEffect
+  useEffect,
+  useContext
 } from "react";
 
-import initialProducts from "../data/products";
+import {
+  getProducts,
+  createProduct,
+  updateProduct as updateProductService,
+  deleteProduct as deleteProductService
+} from "../services/productService";
+
+import {
+  NotificationContext
+} from "./NotificationContext";
 
 export const ProductContext =
   createContext();
@@ -14,163 +24,231 @@ function ProductProvider({ children }) {
   const [products, setProducts] =
     useState([]);
 
-  // Inicializar productos
-  useEffect(() => {
+  const [loading, setLoading] =
+    useState(true);
 
-    const savedProducts = JSON.parse(
+  const {
+    showNotification
+  } = useContext(
+    NotificationContext
+  );
 
-      localStorage.getItem(
+  /*
+  |--------------------------------------------------------------------------
+  | Obtener productos desde la API
+  |--------------------------------------------------------------------------
+  */
 
-        "products"
+  const refreshProducts = async () => {
 
-      )
+    try {
 
-    );
+      const data =
+        await getProducts();
 
-    const validProducts =
+      setProducts(data);
 
-      savedProducts &&
-
-      Array.isArray(savedProducts) &&
-
-      savedProducts.length > 0 &&
-
-      savedProducts.every(
-
-        product =>
-
-          product.nombre &&
-          product.descripcion &&
-          product.precio &&
-          product.categoria &&
-          product.stock !== undefined
-
-      );
-
-    if (validProducts) {
-
-      setProducts(savedProducts);
-
-    } else {
-
-      setProducts(initialProducts);
-
-      localStorage.setItem(
-
-        "products",
-
-        JSON.stringify(
-
-          initialProducts
-
-        )
-
-      );
+      return true;
 
     }
+
+    catch (error) {
+
+      console.error(error);
+
+      showNotification(
+
+        "❌ No fue posible cargar los productos.",
+
+        "error"
+
+      );
+
+      return false;
+
+    }
+
+  };
+
+  useEffect(() => {
+
+    const loadProducts = async () => {
+
+      await refreshProducts();
+
+      setLoading(false);
+
+    };
+
+    loadProducts();
 
   }, []);
 
-  // Guardar automáticamente
-  useEffect(() => {
+  /*
+  |--------------------------------------------------------------------------
+  | Agregar producto
+  |--------------------------------------------------------------------------
+  */
 
-    if (products.length > 0) {
+  const addProduct = async (
+    newProduct
+  ) => {
 
-      localStorage.setItem(
+    try {
 
-        "products",
+      await createProduct(
+        newProduct
+      );
 
-        JSON.stringify(
+      await refreshProducts();
 
-          products
+      showNotification(
 
-        )
+        "✅ Producto agregado correctamente.",
+
+        "success"
 
       );
 
+      return true;
+
     }
 
-  }, [products]);
+    catch (error) {
 
-  // Agregar producto
-  const addProduct = (
+      console.error(error);
 
-    newProduct
+      showNotification(
 
-  ) => {
+        "❌ No fue posible agregar el producto.",
 
-    setProducts(previous => [
+        "error"
 
-      ...previous,
+      );
 
-      newProduct
+      return false;
 
-    ]);
+    }
 
   };
 
-  // Actualizar producto
-  const updateProduct = (
+  /*
+  |--------------------------------------------------------------------------
+  | Actualizar producto
+  |--------------------------------------------------------------------------
+  */
 
+  const updateProduct = async (
     updatedProduct
-
   ) => {
 
-    setProducts(previous =>
+    try {
 
-      previous.map(
+      await updateProductService(
 
-        product =>
+        updatedProduct.id,
 
-          product.id === updatedProduct.id
+        updatedProduct
 
-            ? updatedProduct
+      );
 
-            : product
+      await refreshProducts();
 
-      )
+      showNotification(
 
-    );
+        "✅ Producto actualizado correctamente.",
+
+        "success"
+
+      );
+
+      return true;
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      showNotification(
+
+        "❌ No fue posible actualizar el producto.",
+
+        "error"
+
+      );
+
+      return false;
+
+    }
 
   };
 
-  // Eliminar producto
-  const deleteProduct = (
+  /*
+  |--------------------------------------------------------------------------
+  | Eliminar producto
+  |--------------------------------------------------------------------------
+  */
 
+  const deleteProduct = async (
     id
-
   ) => {
 
-    setProducts(previous =>
+    try {
 
-      previous.filter(
+      await deleteProductService(id);
 
-        product =>
+      await refreshProducts();
 
-          product.id !== id
+      showNotification(
 
-      )
+        "🗑 Producto eliminado correctamente.",
 
-    );
+        "success"
+
+      );
+
+      return true;
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      showNotification(
+
+        "❌ No fue posible eliminar el producto.",
+
+        "error"
+
+      );
+
+      return false;
+
+    }
 
   };
 
-  // Descontar stock
+  /*
+  |--------------------------------------------------------------------------
+  | Actualizar stock
+  |--------------------------------------------------------------------------
+  */
+
   const updateStock = (
-
     productId,
-
     quantity
-
   ) => {
 
-    const product = products.find(
+    const product =
+      products.find(
 
-      product =>
+        product =>
 
-        product.id === productId
+          product.id === productId
 
-    );
+      );
 
     if (!product) {
 
@@ -218,13 +296,17 @@ function ProductProvider({ children }) {
 
         products,
 
+        loading,
+
         addProduct,
 
         updateProduct,
 
         deleteProduct,
 
-        updateStock
+        updateStock,
+
+        refreshProducts
 
       }}
 

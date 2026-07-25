@@ -1,7 +1,11 @@
+import { Link } from "react-router-dom";
+
 import "../styles/Footer.css";
 
 function Footer() {
+
   return (
+
     <footer className="footer">
 
       <div className="footer-container">
@@ -11,8 +15,10 @@ function Footer() {
           <h3>ANGALE</h3>
 
           <p>
+
             Tecnología, innovación y los mejores productos
             para nuestros clientes.
+
           </p>
 
         </div>
@@ -22,10 +28,39 @@ function Footer() {
           <h4>Categorías</h4>
 
           <ul>
-            <li>Smartphones</li>
-            <li>Laptops</li>
-            <li>Audio</li>
-            <li>Gaming</li>
+
+            <li>
+
+              <Link to="/products/smartphones">
+                Smartphones
+              </Link>
+
+            </li>
+
+            <li>
+
+              <Link to="/products/laptops">
+                Laptops
+              </Link>
+
+            </li>
+
+            <li>
+
+              <Link to="/products/audio">
+                Audio
+              </Link>
+
+            </li>
+
+            <li>
+
+              <Link to="/products/gaming">
+                Gaming
+              </Link>
+
+            </li>
+
           </ul>
 
         </div>
@@ -35,9 +70,31 @@ function Footer() {
           <h4>Cuenta</h4>
 
           <ul>
-            <li>Iniciar sesión</li>
-            <li>Registrarse</li>
-            <li>Favoritos</li>
+
+            <li>
+
+              <Link to="/login">
+                Iniciar sesión
+              </Link>
+
+            </li>
+
+            <li>
+
+              <Link to="/login">
+                Registrarse
+              </Link>
+
+            </li>
+
+            <li>
+
+              <Link to="/favorites">
+                Favoritos
+              </Link>
+
+            </li>
+
           </ul>
 
         </div>
@@ -47,9 +104,13 @@ function Footer() {
           <h4>Ayuda</h4>
 
           <ul>
+
             <li>Contacto</li>
+
             <li>Preguntas frecuentes</li>
+
             <li>Términos y condiciones</li>
+
           </ul>
 
         </div>
@@ -59,13 +120,17 @@ function Footer() {
       <div className="footer-bottom">
 
         <p>
+
           © 2026 ANGALE. Todos los derechos reservados.
+
         </p>
 
       </div>
 
     </footer>
+
   );
+
 }
 
 export default Footer;

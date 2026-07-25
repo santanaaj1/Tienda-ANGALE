@@ -1,6 +1,8 @@
 import {
+  useContext,
+  useEffect,
   useMemo,
-  useContext
+  useState
 } from "react";
 
 import AdminSidebar from "../components/AdminSidebar";
@@ -10,8 +12,14 @@ import {
 } from "../context/ProductContext";
 
 import {
-  DataContext
-} from "../context/DataContext";
+  getUsers
+} from "../services/authService";
+
+import {
+  getOrders
+} from "../services/ordersService";
+
+import formatCurrency from "../utils/formatCurrency";
 
 import "../styles/AdminDashboard.css";
 
@@ -27,17 +35,85 @@ function AdminDashboard() {
 
   );
 
-  const {
+  const [
 
     users,
 
-    orders
+    setUsers
 
-  } = useContext(
+  ] = useState([]);
 
-    DataContext
+  const [
 
-  );
+    orders,
+
+    setOrders
+
+  ] = useState([]);
+
+  const [
+
+    loading,
+
+    setLoading
+
+  ] = useState(true);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Obtener usuarios y pedidos
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+
+    const loadData = async () => {
+
+      try {
+
+        const [
+
+          usersData,
+
+          ordersData
+
+        ] = await Promise.all([
+
+          getUsers(),
+
+          getOrders()
+
+        ]);
+
+        setUsers(usersData);
+
+        setOrders(ordersData);
+
+      }
+
+      catch (error) {
+
+        console.error(error);
+
+      }
+
+      finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    loadData();
+
+  }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Total de ventas
+  |--------------------------------------------------------------------------
+  */
 
   const totalSales = useMemo(() => {
 
@@ -45,13 +121,37 @@ function AdminDashboard() {
 
       (total, order) =>
 
-        total + order.total,
+        total + Number(order.total),
 
       0
 
     );
 
   }, [orders]);
+
+  if (loading) {
+
+    return (
+
+      <div className="admin-layout">
+
+        <AdminSidebar />
+
+        <main className="admin-content">
+
+          <h2>
+
+            Cargando panel...
+
+          </h2>
+
+        </main>
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -151,13 +251,7 @@ function AdminDashboard() {
 
             <p>
 
-              $
-
-              {totalSales.toLocaleString(
-
-                "es-CL"
-
-              )}
+              {formatCurrency(totalSales)}
 
             </p>
 

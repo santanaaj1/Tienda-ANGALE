@@ -12,7 +12,9 @@ import {
   ProductContext
 } from "../context/ProductContext";
 
-import categories from "../data/categories";
+import {
+  CategoryContext
+} from "../context/CategoryContext";
 
 function SearchResults() {
 
@@ -33,6 +35,16 @@ function SearchResults() {
   } = useContext(
 
     ProductContext
+
+  );
+
+  const {
+
+    categories
+
+  } = useContext(
+
+    CategoryContext
 
   );
 
@@ -186,61 +198,43 @@ function SearchResults() {
 
           filteredProducts.length > 0
 
-          ?
+            ? (
 
-          (
+                filteredProducts.map(product => (
 
-            filteredProducts.map(
+                  <ProductCard
 
-              product => (
+                    key={product.id}
 
-                <ProductCard
+                    {...product}
 
-                  key={product.id}
+                  />
 
-                  id={product.id}
-
-                  nombre={product.nombre}
-
-                  descripcion={product.descripcion}
-
-                  precio={product.precio}
-
-                  icono={product.icono}
-
-                  stock={product.stock}
-
-                />
+                ))
 
               )
 
-            )
+            : (
 
-          )
+                <div className="empty-products">
 
-          :
+                  <h2>
 
-          (
+                    No se encontraron productos
 
-            <div className="empty-products">
+                  </h2>
 
-              <h2>
+                  <p>
 
-                No se encontraron productos
+                    Intenta buscar por nombre,
 
-              </h2>
+                    categoría o marca.
 
-              <p>
+                  </p>
 
-                Intenta buscar por nombre,
+                </div>
 
-                categoría o marca.
-
-              </p>
-
-            </div>
-
-          )
+              )
 
         }
 

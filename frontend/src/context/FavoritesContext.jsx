@@ -8,6 +8,14 @@ import {
 import { NotificationContext } from "./NotificationContext";
 import { AuthContext } from "./AuthContext";
 
+import {
+
+  getFavorites,
+  addFavorite,
+  deleteFavorite
+
+} from "../services/favoritesService";
+
 export const FavoritesContext =
   createContext();
 
@@ -16,60 +24,82 @@ function FavoritesProvider({ children }) {
   const [favorites, setFavorites] =
     useState([]);
 
-  const { showNotification } =
-    useContext(NotificationContext);
+  const {
 
-  const { currentUser } =
-    useContext(AuthContext);
+    showNotification
 
-  // Cargar favoritos
+  } = useContext(
+
+    NotificationContext
+
+  );
+
+  const {
+
+    currentUser
+
+  } = useContext(
+
+    AuthContext
+
+  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cargar favoritos desde PostgreSQL
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
 
-    if (!currentUser) {
+    const loadFavorites = async () => {
 
-      setFavorites([]);
+      if (!currentUser) {
 
-      return;
+        setFavorites([]);
 
-    }
+        return;
 
-    const savedFavorites = JSON.parse(
+      }
 
-      localStorage.getItem(
+      try {
 
-        `favorites_${currentUser.email}`
+        const data = await getFavorites();
 
-      )
+        setFavorites(data);
 
-    ) || [];
+      }
 
-    setFavorites(savedFavorites);
+      catch (error) {
 
-  }, [currentUser]);
+        console.error(error);
 
-  // Guardar favoritos
-  useEffect(() => {
+      }
 
-    if (!currentUser) {
+    };
 
-      return;
+    loadFavorites();
 
-    }
+  }, [
 
-    localStorage.setItem(
+    currentUser
 
-      `favorites_${currentUser.email}`,
+  ]);
 
-      JSON.stringify(favorites)
+  /*
+  |--------------------------------------------------------------------------
+  | Agregar / eliminar favorito
+  |--------------------------------------------------------------------------
+  */
 
-    );
+  const toggleFavorite = async (
 
-  }, [favorites, currentUser]);
-
-  const toggleFavorite = (
     product,
+
     currentUser,
+
     navigate
+
   ) => {
 
     if (!currentUser) {
@@ -89,42 +119,78 @@ function FavoritesProvider({ children }) {
     }
 
     const exists = favorites.find(
-      item => item.id === product.id
+
+      item => item.producto_id === product.id
+
     );
 
-    if (exists) {
+    try {
 
-      setFavorites(
+      if (exists) {
 
-        favorites.filter(
-          item => item.id !== product.id
-        )
+        await deleteFavorite(
 
-      );
+          exists.id
+
+        );
+
+        setFavorites(
+
+          favorites.filter(
+
+            item => item.id !== exists.id
+
+          )
+
+        );
+
+        showNotification(
+
+          "❌ Producto eliminado de favoritos",
+
+          "warning"
+
+        );
+
+      }
+
+      else {
+
+        await addFavorite(
+
+          product.id
+
+        );
+
+        const updatedFavorites = await getFavorites();
+
+        setFavorites(
+
+          updatedFavorites
+
+        );
+
+        showNotification(
+
+          "❤️ Producto agregado a favoritos",
+
+          "success"
+
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(error);
 
       showNotification(
 
-        "❌ Producto eliminado de favoritos",
+        "No fue posible actualizar favoritos.",
 
-        "warning"
-
-      );
-
-    } else {
-
-      setFavorites([
-
-        ...favorites,
-
-        product
-
-      ]);
-
-      showNotification(
-
-        "❤️ Producto agregado a favoritos",
-
-        "success"
+        "error"
 
       );
 

@@ -28,7 +28,9 @@ const getFavorites = async (usuario_id) => {
 
       productos.stock,
 
-      productos.icono
+      productos.icono,
+
+      productos.image
 
     FROM favoritos
 
@@ -60,7 +62,67 @@ const getFavorites = async (usuario_id) => {
 |--------------------------------------------------------------------------
 */
 
-const addFavorite = async (usuario_id, producto_id) => {
+const addFavorite = async (
+
+  usuario_id,
+
+  producto_id
+
+) => {
+
+  /*
+  |--------------------------------------------------------------------------
+  | Verificar si ya existe
+  |--------------------------------------------------------------------------
+  */
+
+  const existsQuery = `
+
+    SELECT *
+
+    FROM favoritos
+
+    WHERE usuario_id = $1
+
+    AND producto_id = $2;
+
+  `;
+
+  const exists = await pool.query(
+
+    existsQuery,
+
+    [
+
+      usuario_id,
+
+      producto_id
+
+    ]
+
+  );
+
+  if (
+
+    exists.rows.length > 0
+
+  ) {
+
+    return {
+
+      alreadyExists: true,
+
+      favorite: exists.rows[0]
+
+    };
+
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Insertar favorito
+  |--------------------------------------------------------------------------
+  */
 
   const query = `
 
@@ -102,7 +164,13 @@ const addFavorite = async (usuario_id, producto_id) => {
 
   );
 
-  return result.rows[0];
+  return {
+
+    alreadyExists: false,
+
+    favorite: result.rows[0]
+
+  };
 
 };
 
@@ -112,13 +180,23 @@ const addFavorite = async (usuario_id, producto_id) => {
 |--------------------------------------------------------------------------
 */
 
-const deleteFavorite = async (id) => {
+const deleteFavorite = async (
+
+  id,
+
+  usuario_id
+
+) => {
 
   const query = `
 
-    DELETE FROM favoritos
+    DELETE
+
+    FROM favoritos
 
     WHERE id = $1
+
+    AND usuario_id = $2
 
     RETURNING *;
 
@@ -128,7 +206,13 @@ const deleteFavorite = async (id) => {
 
     query,
 
-    [id]
+    [
+
+      id,
+
+      usuario_id
+
+    ]
 
   );
 
