@@ -1,6 +1,5 @@
 const API_URL =
-  import.meta.env.VITE_CATEGORIES_API_URL ||
-  "http://localhost:3000/categories";
+  `${import.meta.env.VITE_API_URL}/categories`;
 
 /*
 |--------------------------------------------------------------------------
@@ -10,18 +9,12 @@ const API_URL =
 
 export const getCategories = async () => {
 
-  const response = await fetch(
-
-    API_URL
-
-  );
+  const response = await fetch(API_URL);
 
   if (!response.ok) {
 
     throw new Error(
-
       "No fue posible obtener las categorías."
-
     );
 
   }

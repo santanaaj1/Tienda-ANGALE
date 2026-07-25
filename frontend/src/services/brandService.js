@@ -1,6 +1,5 @@
 const API_URL =
-  import.meta.env.VITE_BRANDS_API_URL ||
-  "http://localhost:3000/brands";
+  `${import.meta.env.VITE_API_URL}/brands`;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +14,7 @@ export const getBrands = async () => {
   if (!response.ok) {
 
     throw new Error(
-
       "No fue posible obtener las marcas."
-
     );
 
   }
