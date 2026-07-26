@@ -1,5 +1,8 @@
 import pool from "../database/connection.js";
 
+const BASE_URL =
+  process.env.BASE_URL || "http://localhost:3000";
+
 /*
 |--------------------------------------------------------------------------
 | Obtener todos los productos
@@ -20,7 +23,7 @@ const getProducts = async () => {
       categoria,
       stock,
       icono,
-      image
+      CONCAT('${BASE_URL}/images/products/', image) AS image
 
     FROM productos
 
@@ -54,7 +57,7 @@ const getProductById = async (id) => {
       categoria,
       stock,
       icono,
-      image
+      CONCAT('${BASE_URL}/images/products/', image) AS image
 
     FROM productos
 

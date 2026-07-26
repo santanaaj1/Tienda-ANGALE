@@ -1,5 +1,8 @@
 import pool from "../database/connection.js";
 
+const BASE_URL =
+  process.env.BASE_URL || "http://localhost:3000";
+
 /*
 |--------------------------------------------------------------------------
 | Obtener todas las categorías
@@ -15,7 +18,7 @@ const getCategories = async () => {
       value,
       label,
       description,
-      CONCAT('http://localhost:3000/images/categories/', image) AS image
+      CONCAT('${BASE_URL}/images/categories/', image) AS image
 
     FROM categories
 
@@ -44,7 +47,7 @@ const getCategoryById = async (id) => {
       value,
       label,
       description,
-      CONCAT('http://localhost:3000/images/categories/', image) AS image
+      CONCAT('${BASE_URL}/images/categories/', image) AS image
 
     FROM categories
 
