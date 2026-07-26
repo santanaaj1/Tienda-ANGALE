@@ -1,6 +1,5 @@
 const API_URL =
-  import.meta.env.VITE_API_URL_FAVORITES ||
-  "http://localhost:3000/favorites";
+  `${import.meta.env.VITE_API_URL}/favorites`;
 
 /*
 |--------------------------------------------------------------------------
