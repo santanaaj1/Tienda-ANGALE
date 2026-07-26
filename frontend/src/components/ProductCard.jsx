@@ -204,7 +204,7 @@ function ProductCard({
 
               <img
 
-                src={`http://localhost:3000/images/products/${image}`}
+                src={image}
 
                 alt={nombre}
 
