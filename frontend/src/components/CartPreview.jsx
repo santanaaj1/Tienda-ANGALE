@@ -99,7 +99,7 @@ function CartPreview({ onClose }) {
 
                         <img
 
-                          src={`http://localhost:3000/images/products/${item.image}`}
+                          src={item.image}
 
                           alt={item.nombre}
 
