@@ -1,5 +1,9 @@
 import pool from "../database/connection.js";
 
+const BASE_URL =
+  process.env.BASE_URL ||
+  "http://localhost:3000";
+
 /*
 |--------------------------------------------------------------------------
 | Obtener favoritos de un usuario
@@ -30,7 +34,10 @@ const getFavorites = async (usuario_id) => {
 
       productos.icono,
 
-      productos.image
+      CONCAT(
+        '${BASE_URL}/images/products/',
+        productos.image
+      ) AS image
 
     FROM favoritos
 
@@ -69,12 +76,6 @@ const addFavorite = async (
   producto_id
 
 ) => {
-
-  /*
-  |--------------------------------------------------------------------------
-  | Verificar si ya existe
-  |--------------------------------------------------------------------------
-  */
 
   const existsQuery = `
 
@@ -117,12 +118,6 @@ const addFavorite = async (
     };
 
   }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Insertar favorito
-  |--------------------------------------------------------------------------
-  */
 
   const query = `
 

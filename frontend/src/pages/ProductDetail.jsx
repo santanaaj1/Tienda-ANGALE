@@ -180,7 +180,7 @@ function ProductDetail() {
               product.image ? (
 
                 <img
-                  src={`http://localhost:3000/images/products/${product.image}`}
+                  src={product.image}
                   alt={product.nombre}
                   className="product-image-large-file"
                 />
