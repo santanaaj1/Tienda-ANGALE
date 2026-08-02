@@ -20,4 +20,7 @@ const pool = process.env.DATABASE_URL
       database: process.env.DB_NAME,
     });
 
+    console.log("DATABASE_URL =", process.env.DATABASE_URL);
+console.log("DB_HOST =", process.env.DB_HOST);
+
 export default pool;

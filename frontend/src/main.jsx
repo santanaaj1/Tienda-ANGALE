@@ -16,6 +16,7 @@ import NotificationProvider from "./context/NotificationContext";
 import Notification from "./components/Notification";
 
 import "./styles/global.css";
+import "./styles/scale.css";
 
 
 ReactDOM.createRoot(

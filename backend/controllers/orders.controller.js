@@ -4,17 +4,13 @@ import {
 
   getOrderById,
 
-  createCompleteOrder,
+  createOrder,
+
+  createOrderDetail,
 
   deleteOrder
 
 } from "../queries/orders.js";
-
-import {
-
-  productExists
-
-} from "../queries/products.js";
 
 /*
 |--------------------------------------------------------------------------
@@ -26,13 +22,35 @@ const readOrders = async (request, response) => {
 
   try {
 
-    const usuario_id = request.user.id;
+    let orders;
 
-    const orders = await getOrders(
+    /*
+    |--------------------------------------------------------------------------
+    | Administrador obtiene todos los pedidos
+    |--------------------------------------------------------------------------
+    */
 
-      usuario_id
+    if (request.user.rol === "admin") {
 
-    );
+      orders = await getOrders();
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cliente obtiene únicamente sus pedidos
+    |--------------------------------------------------------------------------
+    */
+
+    else {
+
+      orders = await getOrders(
+
+        request.user.id
+
+      );
+
+    }
 
     response.status(200).json(
 
@@ -68,23 +86,39 @@ const readOrderById = async (request, response) => {
 
     const { id } = request.params;
 
-    const usuario_id = request.user.id;
+    let order;
 
-    const order = await getOrderById(
+    /*
+    |--------------------------------------------------------------------------
+    | Administrador puede ver cualquier pedido
+    |--------------------------------------------------------------------------
+    */
 
-      id,
+    if (request.user.rol === "admin") {
 
-      usuario_id
+      order = await getOrderById(
 
-    );
+        id
 
-    if (!order) {
+      );
 
-      return response.status(404).json({
+    }
 
-        message: "Pedido no encontrado"
+    /*
+    |--------------------------------------------------------------------------
+    | Cliente solo puede ver los suyos
+    |--------------------------------------------------------------------------
+    */
 
-      });
+    else {
+
+      order = await getOrderById(
+
+        id,
+
+        request.user.id
+
+      );
 
     }
 
@@ -120,8 +154,6 @@ const addOrder = async (request, response) => {
 
   try {
 
-    const usuario_id = request.user.id;
-
     const {
 
       total,
@@ -132,123 +164,41 @@ const addOrder = async (request, response) => {
 
     /*
     |--------------------------------------------------------------------------
-    | Validación básica del pedido
+    | Crear encabezado del pedido
     |--------------------------------------------------------------------------
     */
 
-    if (
+    const order = await createOrder(
 
-      !Array.isArray(productos) ||
+      request.user.id,
 
-      productos.length === 0
+      total
 
-    ) {
-
-      return response.status(400).json({
-
-        message: "El pedido debe contener al menos un producto."
-
-      });
-
-    }
+    );
 
     /*
     |--------------------------------------------------------------------------
-    | Validación de cada producto
+    | Guardar detalle
     |--------------------------------------------------------------------------
     */
 
     for (const producto of productos) {
 
-      if (
+      await createOrderDetail(
 
-        producto.producto_id === undefined ||
+        order.id,
 
-        producto.producto_id === null ||
+        producto.producto_id,
 
-        !Number.isInteger(producto.producto_id)
+        producto.cantidad,
 
-      ) {
-
-        return response.status(400).json({
-
-          message: "El ID del producto es inválido."
-
-        });
-
-      }
-
-      if (
-
-        producto.cantidad === undefined ||
-
-        producto.cantidad === null ||
-
-        !Number.isInteger(producto.cantidad)
-
-      ) {
-
-        return response.status(400).json({
-
-          message: "La cantidad del producto debe ser un número entero."
-
-        });
-
-      }
-
-      if (
-
-        producto.cantidad <= 0
-
-      ) {
-
-        return response.status(400).json({
-
-          message: "La cantidad del producto debe ser mayor que cero."
-
-        });
-
-      }
-
-      /*
-      |--------------------------------------------------------------------------
-      | Verificar que el producto exista
-      |--------------------------------------------------------------------------
-      */
-
-      const exists = await productExists(
-
-        producto.producto_id
+        producto.precio
 
       );
 
-      if (!exists) {
-
-        return response.status(400).json({
-
-          message: `El producto con ID ${producto.producto_id} no existe.`
-
-        });
-
-      }
-
     }
 
-    const order = await createCompleteOrder(
-
-      usuario_id,
-
-      total,
-
-      productos
-
-    );
-
-    response.status(201).json(
-
-      order
-
-    );
+    response.status(201).json(order);
 
   }
 
@@ -258,7 +208,7 @@ const addOrder = async (request, response) => {
 
     response.status(500).json({
 
-      message: error.message || "Error al crear el pedido"
+      message: "Error al crear el pedido"
 
     });
 
@@ -278,23 +228,39 @@ const removeOrder = async (request, response) => {
 
     const { id } = request.params;
 
-    const usuario_id = request.user.id;
+    /*
+    |--------------------------------------------------------------------------
+    | El administrador puede eliminar cualquier pedido
+    |--------------------------------------------------------------------------
+    */
 
-    const order = await deleteOrder(
+    if (request.user.rol === "admin") {
 
-      id,
+      await deleteOrder(
 
-      usuario_id
+        id,
 
-    );
+        null
 
-    if (!order) {
+      );
 
-      return response.status(404).json({
+    }
 
-        message: "Pedido no encontrado"
+    /*
+    |--------------------------------------------------------------------------
+    | Cliente únicamente elimina los suyos
+    |--------------------------------------------------------------------------
+    */
 
-      });
+    else {
+
+      await deleteOrder(
+
+        id,
+
+        request.user.id
+
+      );
 
     }
 

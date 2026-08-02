@@ -28,7 +28,7 @@ function FeaturedProducts() {
 
       <h2>
 
-        Productos Destacados
+        Catalogo de Productos
 
       </h2>
 

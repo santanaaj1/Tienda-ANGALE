@@ -1,0 +1,8 @@
+/* Compensa el diseño calibrado a ~1980px de ancho.
+   En escritorio la página se dibuja al 67% para que el
+   navegador al 100% se vea igual que antes al 67%. */
+@media (min-width: 1025px) {
+  html {
+    zoom: 0.67;
+  }
+}
